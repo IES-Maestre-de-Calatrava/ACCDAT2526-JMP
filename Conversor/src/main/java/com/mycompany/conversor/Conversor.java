@@ -7,30 +7,35 @@ package com.mycompany.conversor;
 import java.util.Scanner;
 /**
  *
- * @author Gregorio 
+ * @author Javier Molina-Prados 
  * Created on 9 sept 2025
  */
 public class Conversor {
     
+    /**
+    * Método que convierte una cantidad entre euros y pesetas, según el tipo indicado por el usuario.
+    *
+    * @param cantidad                   La cantidad a convertir.
+    * @return res                       El resultado de la conversión.
+    * @throws IllegalArgumentException  Si el tipo de moneda introducido no es válido.
+    */
     public static double conversor (double cantidad){
+        // Cuerpo del método
+        double res = cantidad;
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("A que quiere convertir: 1 = euro,   2 = pesetas");
+        System.out.println("A que quiere convertir: euro, pesetas");
         String moneda = scanner.nextLine();
         
-        /*while moneda != "euro" or moneda != "pesetas" {
-            System.out.println("A que quiere convertir: 1 = euro,   2 = pesetas");
-            String moneda = scanner.nextLine();
-        }*/
-        
-        if (moneda == "1"){
-            cantidad = cantidad/166.386;
+        if (moneda.equals("euro")){
+            res = res/166.286;
+        } else if (moneda.equals("pesetas")){
+            res = res*166.386;
+        } else {
+            throw new IllegalArgumentException("ERROR: tipo de dato invalido");
         }
         
-        if (moneda == "2"){
-            cantidad = cantidad*166.386;
-        }
-        return cantidad;
+        return res;
     }
     
     public static void main (String[]args){
