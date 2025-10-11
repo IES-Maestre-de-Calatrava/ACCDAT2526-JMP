@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
-package com.company.filestreambytes.modelo;
+package modelo;
 
 import java.io.DataInputStream;
 import java.io.FileNotFoundException;
@@ -88,4 +88,27 @@ public class LecturaEscrituraArrays extends Fichero {
         
         return texto.toString();
     }
+    
+    public static void copiarArchivo (String rutaOrigen, String rutaDestino){
+        
+        try(FileInputStream ficheroIn = new FileInputStream(rutaOrigen);
+            FileOutputStream ficheroOut = new FileOutputStream(rutaDestino);){
+            
+            
+            byte [] bytes = new byte [1024];
+            
+            int bytesLeidos;
+            
+            while((bytesLeidos = ficheroIn.read(bytes)) != -1){
+                ficheroOut.write(bytes, 0, bytesLeidos);
+            }
+            
+            System.out.println("Archivo copiado con exito");
+         }catch(FileNotFoundException e){
+            e.printStackTrace();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+    
 }

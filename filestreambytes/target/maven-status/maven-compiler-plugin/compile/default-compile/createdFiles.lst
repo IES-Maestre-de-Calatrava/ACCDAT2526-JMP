@@ -1,6 +1,9 @@
-com\company\filestreambytes\modelo\LecturaEscrituraDatosPrimitivos.class
-com\company\filestreambytes\modelo\CopiarArchivo.class
-com\company\filestreambytes\modelo\LecturaEscrituraArrays.class
-com\company\filestreambytes\modelo\Fichero.class
-com\company\filestreambytes\modelo\LecturaEscritura.class
-com\filestreambytes\Filestreambytes.class
+modelo\LecturaEscrituraDatosPrimitivos.class
+filestreambytes\Filestreambytes.class
+modelo\LecturaEscrituraArrays.class
+modelo\objetos\Departamento.class
+modelo\LecturaEscritura.class
+modelo\objetos\MiObjectOutputStream.class
+modelo\LecturaEscrituraObjetos.class
+modelo\objetos\Empleado.class
+modelo\Fichero.class
