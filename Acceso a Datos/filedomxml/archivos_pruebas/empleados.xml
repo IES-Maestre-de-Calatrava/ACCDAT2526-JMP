@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Empleados>
+        
+    <Empleado>
+                
+        <identificador>1</identificador>
+                
+        <apellido>Garcia</apellido>
+            
+        <Cargo>Por especificar</Cargo>
+        <Saldo>1000</Saldo>
+    </Empleado>
+        
+    
+    <Empleado>
+                
+        <identificador>2</identificador>
+                
+        <apellido>Perez</apellido>
+            
+        <Cargo>Por especificar</Cargo>
+        <Saldo>1000</Saldo>
+    </Empleado>
+        
+    
+    <Empleado>
+                
+        <identificador>3</identificador>
+                
+        <apellido>Redondo</apellido>
+            
+        <Cargo>Por especificar</Cargo>
+        <Saldo>1000</Saldo>
+    </Empleado>
+    
+</Empleados>

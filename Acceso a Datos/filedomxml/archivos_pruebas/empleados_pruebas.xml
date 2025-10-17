@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Empleados>
+                                    
+    
+    
+    
+    
+    
+    
+    
+    <Empleado>
+                                                                        
+        
+        
+        
+        
+        
+        
+        
+        <identificador>1</identificador>
+                                                                        
+        
+        
+        
+        
+        
+        
+        
+        <apellido>Garcia</apellido>
+                                                                    
+        
+        
+                
+        
+        
+        
+                                    
+    
+    
+    
+    
+        
+        
+        <Saldo>200</Saldo>
+                    
+    
+    </Empleado>
+                                    
+    
+    
+    
+    
+    
+    
+    
+    
+    <Empleado>
+                                                                        
+        
+        
+        
+        
+        
+        
+        
+        <identificador>2</identificador>
+                                                                        
+        
+        
+        
+        
+        
+        
+        
+        <apellido>Perez</apellido>
+                                                                    
+        
+        
+                
+        
+        
+        
+        
+        
+        
+        <Saldo>1300</Saldo>
+                                                            
+    
+    
+    
+    
+    
+    
+    </Empleado>
+                                    
+    
+    
+    
+    
+    
+    
+    
+    
+    <Empleado>
+                                                                        
+        
+        
+        
+        
+        
+        
+        
+        <identificador>3</identificador>
+                                                                        
+        
+        
+        
+        
+        
+        
+        
+        <apellido>Redondo</apellido>
+                                                                    
+        
+        
+                
+        
+        
+        
+        
+        
+        
+        <Saldo>55000</Saldo>
+                                                            
+    
+    
+    
+    
+    
+    
+    </Empleado>
+                                
+
+
+
+
+
+
+
+</Empleados>
