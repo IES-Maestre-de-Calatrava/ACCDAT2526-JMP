@@ -1,0 +1,70 @@
+sh-4.4$ sqlplus / as sysdba
+
+SQL*Plus: Release 23.0.0.0.0 - Production on Mon Oct 20 11:26:33 2025
+Version 23.9.0.25.07
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 23ai Free Release 23.0.0.0.0 - Develop, Learn, and Run for Free
+Version 23.9.0.25.07
+
+SQL> show con_name
+
+CON_NAME
+------------------------------
+CDB$ROOT
+SQL> alter session set container= freepdb1;
+
+Session altered.
+
+SQL> alter user system identified by oracle;
+alter user system identified by oracle
+*
+ERROR at line 1:
+ORA-65066: The specified changes must apply to all containers
+Help: https://docs.oracle.com/error-help/db/ora-65066/
+
+
+SQL> alter user system identified by oracle;
+alter user system identified by oracle
+*
+ERROR at line 1:
+ORA-65066: The specified changes must apply to all containers
+Help: https://docs.oracle.com/error-help/db/ora-65066/
+
+
+SQL> show con_name
+
+CON_NAME
+------------------------------
+FREEPDB1
+SQL> sqlplus / as sysdba
+SP2-0734: unknown command beginning "sqlplus / ..." - rest of line ignored.
+Help: https://docs.oracle.com/error-help/db/sp2-0734/
+SQL> exit
+Disconnected from Oracle Database 23ai Free Release 23.0.0.0.0 - Develop, Learn, and Run for Free
+Version 23.9.0.25.07
+sh-4.4$ sqlplus / as sysdba
+
+SQL*Plus: Release 23.0.0.0.0 - Production on Mon Oct 20 11:30:27 2025
+Version 23.9.0.25.07
+
+Copyright (c) 1982, 2025, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 23ai Free Release 23.0.0.0.0 - Develop, Learn, and Run for Free
+Version 23.9.0.25.07
+
+SQL> show con_name
+
+CON_NAME
+------------------------------
+CDB$ROOT
+SQL> alter user system identified by oracle;
+
+User altered.
+
+SQL> 
