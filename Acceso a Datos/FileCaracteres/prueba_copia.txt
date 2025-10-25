@@ -1,0 +1,7 @@
+Este es el fichero de prueba en el que probaremos las funciones de la clase FileCaracteres.
+
+189589174__fjl4654/·&%/(·
+
+JEJE.
+Finsertando un bloque de caracteres sin salto de linea esta linea introducira un salto de linea despues
+ves como insertaba el salto de linea JEJE
