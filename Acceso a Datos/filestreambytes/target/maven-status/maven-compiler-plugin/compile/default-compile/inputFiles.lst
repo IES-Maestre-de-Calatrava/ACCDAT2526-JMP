@@ -1,9 +1,12 @@
-C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\filestreambytes\src\main\java\filestreambytes\Filestreambytes.java
-C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\filestreambytes\src\main\java\modelo\Fichero.java
-C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\filestreambytes\src\main\java\modelo\LecturaEscritura.java
-C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\filestreambytes\src\main\java\modelo\LecturaEscrituraArrays.java
-C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\filestreambytes\src\main\java\modelo\LecturaEscrituraDatosPrimitivos.java
-C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\filestreambytes\src\main\java\modelo\LecturaEscrituraObjetos.java
-C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\filestreambytes\src\main\java\modelo\objetos\Departamento.java
-C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\filestreambytes\src\main\java\modelo\objetos\Empleado.java
-C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\filestreambytes\src\main\java\modelo\objetos\MiObjectOutputStream.java
+C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\Acceso a Datos\filestreambytes\src\main\java\Controlador\Controlador.java
+C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\Acceso a Datos\filestreambytes\src\main\java\filestreambytes\Filestreambytes.java
+C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\Acceso a Datos\filestreambytes\src\main\java\modelo\Fichero.java
+C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\Acceso a Datos\filestreambytes\src\main\java\modelo\LecturaEscritura.java
+C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\Acceso a Datos\filestreambytes\src\main\java\modelo\LecturaEscrituraArrays.java
+C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\Acceso a Datos\filestreambytes\src\main\java\modelo\LecturaEscrituraDatosPrimitivos.java
+C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\Acceso a Datos\filestreambytes\src\main\java\modelo\LecturaEscrituraObjetos.java
+C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\Acceso a Datos\filestreambytes\src\main\java\modelo\objetos\Departamento.java
+C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\Acceso a Datos\filestreambytes\src\main\java\modelo\objetos\Empleado.java
+C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\Acceso a Datos\filestreambytes\src\main\java\modelo\objetos\MiObjectOutputStream.java
+C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\Acceso a Datos\filestreambytes\src\main\java\vista\InterfazVista.java
+C:\Users\Javier\Documents\GitHub\ACCDAT2526-JMP\Acceso a Datos\filestreambytes\src\main\java\vista\VentanaConversorTexto.java

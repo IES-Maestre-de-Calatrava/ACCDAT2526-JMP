@@ -5,6 +5,7 @@
 
 package modelo;
 
+import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -27,48 +28,53 @@ public class LecturaEscrituraObjetos extends Fichero{
     }
     
     public void escribirObjetos(Object objeto) {
-    FileOutputStream ficheroOut = null;
-    ObjectOutputStream datosOut = null;
+        FileOutputStream ficheroOut = null;
+        ObjectOutputStream datosOut = null;
 
-    try {
-        if (existeFichero()) {
-            ficheroOut = new FileOutputStream(super.getRuta(), true);
-            datosOut = new MiObjectOutputStream(ficheroOut);
-        } else {
-            ficheroOut = new FileOutputStream(super.getRuta());
-            datosOut = new ObjectOutputStream(ficheroOut);
-        }
-
-        datosOut.writeObject(objeto);
-
-    } catch (FileNotFoundException e) {
-        e.printStackTrace();
-    } catch (IOException e) {
-        e.printStackTrace();
-    } finally {
         try {
-            if (datosOut != null) datosOut.close();
-            if (ficheroOut != null) ficheroOut.close();
+            if (existeFichero()) {
+                ficheroOut = new FileOutputStream(super.getRuta(), true);
+                datosOut = new MiObjectOutputStream(ficheroOut);
+            } else {
+                ficheroOut = new FileOutputStream(super.getRuta());
+                datosOut = new ObjectOutputStream(ficheroOut);
+            }
+
+            datosOut.writeObject(objeto);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (datosOut != null) datosOut.close();
+                if (ficheroOut != null) ficheroOut.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-    }
-    }
-    
+        }
+
     public ArrayList<Object> lecturaObjetosUniversal(){
         ArrayList<Object> retornoList = new ArrayList();
-        Object retorno = null;
         
         try (
-        FileInputStream ficheroIn = new FileInputStream(super.getRuta());
-        ObjectInputStream datosIn = new ObjectInputStream(ficheroIn);)
-        {
-          while (ficheroIn.available() > 0){
-              retorno = datosIn.readObject();
-              retornoList.add(retorno);
-          }  
+            FileInputStream ficheroIn = new FileInputStream(super.getRuta());
+            ObjectInputStream datosIn = new ObjectInputStream(ficheroIn);)
+            {
+              while (true){
+                  Object retorno = datosIn.readObject();
+                  retornoList.add(retorno);
+              }  
+              
         }catch (FileNotFoundException e){
             e.printStackTrace();
+            
+        }catch (EOFException ex){
+            // AQUI NO ES ERROR, PQ ES LA FORMA DE SABER QUE HEMOS LLEGADO AL FINAL DEL ARCHIVO
+            System.out.println("Fin de lectura de objetos.");
+        
         }catch(IOException | ClassNotFoundException ex){
             System.getLogger(LecturaEscrituraObjetos.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }

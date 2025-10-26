@@ -1,9 +1,12 @@
 modelo\LecturaEscrituraDatosPrimitivos.class
+vista\VentanaConversorTexto.class
 filestreambytes\Filestreambytes.class
 modelo\LecturaEscrituraArrays.class
 modelo\objetos\Departamento.class
 modelo\LecturaEscritura.class
 modelo\objetos\MiObjectOutputStream.class
+vista\InterfazVista.class
 modelo\LecturaEscrituraObjetos.class
 modelo\objetos\Empleado.class
+controlador\Controlador.class
 modelo\Fichero.class

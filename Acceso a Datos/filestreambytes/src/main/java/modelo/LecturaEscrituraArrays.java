@@ -10,11 +10,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.FileInputStream;
 
 /**
  *
- * @author b15-11m
+ * @author Javier Molina
  * Created on 1 oct 2025
  */
 public class LecturaEscrituraArrays extends Fichero {
@@ -22,17 +23,10 @@ public class LecturaEscrituraArrays extends Fichero {
         super(ruta);
     }
     
-    public void escribirArrays(){
-        String[] nombres = {"Ana", "Pepe"};
-        int[] telefonos = {123456789, 234567891};
-        boolean [] altas = {true, false};
-        
+    public void escribirArrays(String [] nombres, int [] telefonos, boolean [] altas){
         try(FileOutputStream ficheroOut = new FileOutputStream(super.getRuta());
             DataOutputStream arraysOut = new DataOutputStream(ficheroOut);){
-            
-            // Longitud del array
-            arraysOut.writeInt(nombres.length);
-            
+                        
             // Escribimos los datos
             for(int i = 0; i < nombres.length; i ++){
                 arraysOut.writeUTF(nombres[i]);
@@ -49,35 +43,34 @@ public class LecturaEscrituraArrays extends Fichero {
     
     
     public String lecturaArrays(){
-        StringBuffer texto = null;
+        StringBuffer texto = new StringBuffer();
         
         try(FileInputStream ficheroIn = new FileInputStream(super.getRuta());
             DataInputStream datosIn = new DataInputStream(ficheroIn);){
-            
-            texto = new StringBuffer();
-            
+                        
             // Para saber cuantas veces repetir el bucle en cuestión
-            // de los elementos que haya en el array
-            int longitud = datosIn.readInt();
-            
-            for(int i = 0; i < longitud; i ++){
-                String nombre = datosIn.readUTF();
-                int telefono = datosIn.readInt();
-                boolean alta = datosIn.readBoolean();
-                
-                
-                texto.append("Nombre: ");
-                texto.append(nombre);
-                texto.append(". Telefono: ");
-                texto.append(telefono);
-                texto.append(". Estado de alta: ");
-                texto.append(alta);
-                if(alta==true){
-                    texto.append(".  El empleado SI pertenece a la empresa");
-                }else{
-                    texto.append(".  El empleado NO pertenece a la empresa");
+            // de los elementos que haya en el array            
+            try{
+                while (true) {
+
+                    String nombre = datosIn.readUTF();
+                    int telefono = datosIn.readInt();
+                    boolean alta = datosIn.readBoolean();
+
+
+                    texto.append("Nombre: ").append(nombre);
+                    texto.append(". Telefono: ").append(telefono);
+                    texto.append(". Estado de alta: ").append(alta);
+
+                    if(alta){
+                        texto.append(".  El empleado SI pertenece a la empresa");
+                    }else{
+                        texto.append(".  El empleado NO pertenece a la empresa");
+                    }
+                    texto.append("\n");
                 }
-                texto.append("\n");
+            }catch(EOFException ex){
+                System.out.println("Fin de la lectura de arrays. Proceso completado.");
             }
             
         }catch(FileNotFoundException e){

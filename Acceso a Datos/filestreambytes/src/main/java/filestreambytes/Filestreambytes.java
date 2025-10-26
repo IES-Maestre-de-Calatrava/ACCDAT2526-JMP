@@ -4,6 +4,7 @@
 
 package filestreambytes;
 
+import controlador.Controlador;
 import java.util.ArrayList;
 import modelo.LecturaEscritura;
 import modelo.LecturaEscrituraArrays;
@@ -11,6 +12,8 @@ import modelo.LecturaEscrituraDatosPrimitivos;
 import modelo.LecturaEscrituraObjetos;
 import modelo.objetos.Departamento;
 import modelo.objetos.Empleado;
+import vista.InterfazVista;
+import vista.VentanaConversorTexto;
 
 /**
  *
@@ -19,6 +22,8 @@ import modelo.objetos.Empleado;
 public class Filestreambytes {
 
     public static void main(String[] args) {
+        
+       /*
        LecturaEscrituraObjetos lecturaEscrituraObjetos = new LecturaEscrituraObjetos(".\\archivos_prueba\\archivo_con_objetos.dat");
        
        
@@ -38,23 +43,43 @@ public class Filestreambytes {
         lecturaEscrituraObjetos.escribirObjetos(emple);
        
        
-         ArrayList<Departamento> departamentos = lecturaEscrituraObjetos.convertirArrayList(lecturaEscrituraObjetos.lecturaObjetosUniversal(),Departamento.class);
+        // Leer solo una vez
+        ArrayList<Object> objetosLeidos = lecturaEscrituraObjetos.lecturaObjetosUniversal();
 
-        for(Departamento depart: departamentos) {
-            System.out.println(depart.toString());            
+        // Convierto según tipo
+        ArrayList<Departamento> departamentos =
+            LecturaEscrituraObjetos.convertirArrayList(objetosLeidos, Departamento.class);
+
+        ArrayList<Empleado> empleados =
+            LecturaEscrituraObjetos.convertirArrayList(objetosLeidos, Empleado.class);
+
+        // Mostrar resultados por tipo
+        // Departamentos
+        for (Departamento depart : departamentos) {
+            System.out.println(depart);
         }
-       
         
-       
-        ArrayList<Empleado> empleados = lecturaEscrituraObjetos.convertirArrayList(lecturaEscrituraObjetos.lecturaObjetosUniversal(),Empleado.class);
-       
-        for(Empleado empleado : empleados){
-            if(empleado.getNombre().equals("Luis")){
-                System.out.println(empleado.toString());
-            }    
+        // Empleados
+        for (Empleado empleado : empleados) {
+            System.out.println(empleado);
         }
+        */
        
+        LecturaEscritura                    lecturaEscritura                = new LecturaEscritura(".\\ejemploprueba.dat");
+        LecturaEscrituraArrays              lecturaEscrituraArrays          = new LecturaEscrituraArrays(".\\ejemplopruebaDatosArrays.dat");
+        LecturaEscrituraDatosPrimitivos     lecturaEscrituraDatosPrimitivos = new LecturaEscrituraDatosPrimitivos(".\\ejemplopruebaDatosPrimitivos.dat"); 
+        LecturaEscrituraObjetos             lecturaEscrituraObjetos         = new LecturaEscrituraObjetos(".\\archivo_con_objetos.dat");
+        
+        InterfazVista vista = new VentanaConversorTexto();
+        
+        Controlador controlador = new Controlador(vista,lecturaEscritura,lecturaEscrituraArrays,lecturaEscrituraDatosPrimitivos,lecturaEscrituraObjetos);
     }
 }
-    
+
+    /*
+    .\\archivos_prueba\\ejemploprueba.dat
+    .\\archivos_prueba\\ejemplopruebaDatosArrays.dat
+    .\\archivos_prueba\\ejemplopruebaDatosPrimitivos.dat
+    .\\archivos_prueba\\archivo_con_objetos.dat
+    */
 

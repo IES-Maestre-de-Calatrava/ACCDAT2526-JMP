@@ -12,7 +12,7 @@ import java.io.IOException;
 
 /**
  *
- * @author b15-11m
+ * @author Javier Molina
  * Created on 30 sept 2025
  */
 public class LecturaEscritura extends Fichero {
@@ -50,14 +50,13 @@ public class LecturaEscritura extends Fichero {
     }
     
     public String leerByteAByte(){
-        StringBuffer texto = new StringBuffer();
-        int i;
+        StringBuilder texto = new StringBuilder();
         
-        try{
-            FileInputStream ficheroIn = new FileInputStream(super.getRuta());
+        try(FileInputStream ficheroIn = new FileInputStream(super.getRuta())){
             
-            while((i = ficheroIn.read()) != -1){
-                texto.append((char) i);
+            int byteLeido;
+            while((byteLeido = ficheroIn.read()) != -1){
+                texto.append((char) byteLeido);
             }
         }catch(FileNotFoundException e){
             e.printStackTrace();
@@ -68,18 +67,20 @@ public class LecturaEscritura extends Fichero {
         return texto.toString();
     }
     
+    
+    /*  Abre un archivo con FileInputStream                 Lectura binaria
+	Lee bloques de 5 bytes                              Usa un buffer fijo
+	Convierte cada bloque a String y concatena          
+        Devuelve el texto completo
+    */
     public String leerArrayBytes(){
-        StringBuffer texto = new StringBuffer();
-        int i;
+        StringBuilder texto = new StringBuilder();        
+        byte[] cadena = new byte[5];
         
-        byte cadena[] = new byte[5];
-        
-        try{
-            FileInputStream ficheroIn = new FileInputStream(super.getRuta());
-            
-            while((i = ficheroIn.read(cadena)) != -1){
-                texto.append(new String(cadena));
-                cadena = new byte[5];
+        try (FileInputStream ficheroIn = new FileInputStream(super.getRuta())){
+            int byteLeido;
+            while((byteLeido = ficheroIn.read(cadena)) != -1){
+                texto.append(new String(cadena, 0, byteLeido));
             }
         }catch(FileNotFoundException e){
             e.printStackTrace();

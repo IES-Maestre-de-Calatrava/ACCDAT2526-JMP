@@ -28,8 +28,8 @@ public class Fichero {
         return ruta;
     }
 
-    public void setRuta(File ruta) {
-        this.ruta = ruta;
+    public void setRuta(String ruta) {
+        this.ruta = new File(ruta);
     }
 
     public boolean existeFichero(){
