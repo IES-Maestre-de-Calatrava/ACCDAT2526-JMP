@@ -6,18 +6,23 @@
 package modelo;
 
 /**
- * Clase que representa a un empleado
- * 
- * @author Break4Learning by Javier García-Retamero Redondo
- * @version 1.0
- * Created on 5 oct 2024
+ *
+ * @author b15-11m
  */
+
 public class Empleado {
     private long identificador;
     private String apellido;
     private int departamento;
     private double salario;
 
+    /**
+     * Constructor de empleado con 4 atributos
+     * @param identificador             Identificador del empleado
+     * @param apellido                  Apellido del empleado
+     * @param departamento              Departamento del empleado
+     * @param salario                   Salario del empleado
+     */
     public Empleado(long identificador, String apellido, int departamento, double salario) {
         this.identificador = identificador;
         this.apellido = apellido;
@@ -25,12 +30,21 @@ public class Empleado {
         this.salario = salario;
     }
 
+    /**
+     * Constructor de empleado con 3 atributos
+     * @param apellido                  Apellido del empleado
+     * @param departamento              Departamento del empleado
+     * @param salario                   Salario del empleado
+     */
     public Empleado(String apellido, int departamento, double salario) {
         this.apellido = apellido;
         this.departamento = departamento;
         this.salario = salario;
     }
     
+    /**
+     * Constructor vacío
+     */
     public Empleado() {
     }
 

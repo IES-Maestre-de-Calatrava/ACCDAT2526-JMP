@@ -5,30 +5,28 @@
 package filexmlconversor;
 
 import javax.xml.transform.TransformerException;
-import modelo.Conversor;
+// Importamos el nuevo controlador
+import controlador.ConversorControlador;
 
 /**
+ * Clase principal de la aplicación (la "A" de MVC).
  *
  * @author Javier Molina-Prados
  */
 public class Filexmlconversor {
 
-    public static void main(String[] args) throws TransformerException {
+    public static void main(String[] args) { 
         
-        /*
-        String ruta = ".\\archivos_pruebas\\";
-        String origenDatos = ruta + "alumnos.xml";
-        String plantilla = ruta + "alumnosPlantilla.xsl";
-        String salida = ruta + "alumnos.html";
-        */
-        
+        // --- Configuración de rutas (puede ser estática o provenir de entrada de usuario) ---
         String ruta = ".\\archivos_pruebas\\";
         String origenDatos = ruta + "empleados.xml";
         String plantilla = ruta + "empleadosPlantilla.xsl";
         String salida = ruta + "empleados.html";
 
-        Conversor conv = new Conversor (origenDatos, plantilla, salida);
+        // 1. Instanciar el Controlador, pasándole las rutas.
+        ConversorControlador controlador = new ConversorControlador (origenDatos, plantilla, salida);
         
-        conv.ConvertirAHTML();
+        // 2. Iniciar el proceso de conversión.
+        controlador.ejecutarConversor();
     }
 }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Empleados>
+    <Empleado>
+        <identificador>1</identificador>
+        <apellido>molina</apellido>
+        <departamento>12</departamento>
+        <salario>1500.0</salario>
+    </Empleado>
+    <Empleado>
+        <identificador>2</identificador>
+        <apellido>ruiz</apellido>
+        <departamento>34</departamento>
+        <salario>2222.0</salario>
+    </Empleado>
+    <Empleado>
+        <identificador>3</identificador>
+        <apellido>candelas</apellido>
+        <departamento>88</departamento>
+        <salario>3334.0</salario>
+    </Empleado>
+</Empleados>

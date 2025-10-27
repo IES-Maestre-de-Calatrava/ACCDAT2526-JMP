@@ -5,8 +5,6 @@
 
 package modelo;
 
-
-
 import org.w3c.dom.*;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
@@ -19,247 +17,335 @@ import org.xml.sax.SAXException;
 
 /**
  *
- * @author Javier Molina-Prados
- * Created on 8 oct 2025
+ * @author b15-11m
  */
 public class GestionContenidoDOM {
-    
-    // Creamos nuestro documento y nuestra fabrica y constructos de XML para usarlos mas tarde
-    Document documento; // creamos el documento aqui 
+    // Para trabajar con XML debemos utilizar un parser
     DocumentBuilderFactory factory;
+    // Creamos un constructor de documenttos
     DocumentBuilder builder;
-        
+    
+    Document documento;
+    
+    /**
+     * Inicializa un documento xml vacío con un nodo raíz
+     * @param nombre                Nodo raíz llamado "nombre"
+     */
     public GestionContenidoDOM(String nombre){
+        try{
+            this.factory = DocumentBuilderFactory.newInstance();
+            this.builder = factory.newDocumentBuilder();
+        
+            // Creamos un documento vacion con un nodo principal
+            DOMImplementation implementation = builder.getDOMImplementation();
+           this.documento = implementation.createDocument(null, nombre, null);
             
-       try {
-        // Crea una fábrica para construir analizadores DOM (trabajar con XML)
-        // Para trabajar con XML debemos utilizar un parser.
-        this.factory = DocumentBuilderFactory.newInstance();
-
-        // Obtiene un constructor de documentos XML
-        this.builder = factory.newDocumentBuilder();
-
-        // Creamos un documento vacío con un nodo principal:
-        DOMImplementation implementation = builder.getDOMImplementation();
-        this.documento = implementation.createDocument(null, nombre, null); // aqui esta distinto a las diapositivas, porque crea el document en las propiedades
-
-        // Define la versión del XML
-        documento.setXmlVersion("1.0");
-
-        } catch (ParserConfigurationException ex) {
-            // Registra el error si hay un problema al configurar el parser
-            System.getLogger(GestionContenidoDOM.class.getName())
-                  .log(System.Logger.Level.ERROR, (String) null, ex);
-        }
-    }
+            // Asignamos la versión del XML
+            documento.setXmlVersion("1.0");
         
+        } catch(ParserConfigurationException e){
+            e.printStackTrace();
+        }        
+    }
+    
+    /**
+     * Añade un nodo hijo a un nodo raíz
+     * @param nombreNodo            Nombre del nodo hijo
+     * @return                      Devuelve el nodo creado
+     */
     public Element addNodo(String nombreNodo){
-        // Creamos el nodo 
-        Element nodoNuevo = this.documento.createElement(nombreNodo);
+        // Creamos un nodo
+        Element nodoPrincipal = this.documento.createElement(nombreNodo);
         
-        // Y ahora lo pegamos en nuestro documento
-        this.documento.getDocumentElement().appendChild(nodoNuevo);
+        // Y lo pegamos en el documento
+        this.documento.getDocumentElement().appendChild(nodoPrincipal);
         
-        return nodoNuevo;
-                
+        return nodoPrincipal;
     }
-
+    
+    /**
+     * Añade un nodo hijo a un nodo padre específico
+     * @param nombreNodo            Nodo hijo que se añadirá al padre
+     * @param elementoPadre         Nodo padre al que añadiremos el hijo
+     * @return                      Devuelve el nodo creado
+     */
     public Element addNodo(String nombreNodo, Element elementoPadre){
-        
-        // Creamos el hijo “id” y lo añadimos: acabamos de añadir el elemento id(sin valor) de empleado
-        Element dato = this.documento.createElement(nombreNodo);
+        // Creamos el elemento hijo y lo añadimos
+        Element dato  = this.documento.createElement(nombreNodo);
         elementoPadre.appendChild(dato);
         
         return dato;
     }
     
-    public void addNodoYTexto(String nombreNodo, String texto, Element elementoPadre){
-        
-        // Creamos un element para nombreNodo (id)
+    /**
+     * Añade un nodo con texto como hijo de otro nodo
+     * @param nombreNodo            Nodo hijo que se añadirá al padre
+     * @param valor                 Valor del elemento a añadir
+     * @param elementoPadre         Nodo padre al que añadiremos el hijo
+     */
+    public void addNodoYTexto(String nombreNodo, String valor, Element elementoPadre){
+        // Creamos el elemento dato con un valor
         Element dato = this.documento.createElement(nombreNodo);
-        
-        // Asignamos un valor al hijo y lo añadimos:
-        Text textoDato = this.documento.createTextNode(texto);
+        Text textoDato = this.documento.createTextNode(valor);
         
         dato.appendChild(textoDato);
         
-        elementoPadre.appendChild(dato); // no olvidar cerrar la etiqueta </id>, mira las diapositivas si te lias
-        
+        // Añadimos el elemento dato al elementoPadre
+        elementoPadre.appendChild(dato);
     }
-
-    private Transformer preProcess (String indent){
-        
+    
+    /**
+     * Configura el Transformer para exportar el xml con indentación
+     * @param indent                Indentación
+     * @return                      Archivo xml list para usar
+     */
+    private Transformer preProcess(String indent){
         Transformer transformer = null;
-        
         try {
-            // Obtenemos un transformer, para pasar el documento de memoria a disco (o archivo o por consola tambien, este metodo es comun)
+            // Obtenemos un transformer y lanzamos la conversion
             transformer = TransformerFactory.newInstance().newTransformer();
-        } catch (TransformerConfigurationException ex) {
-            System.getLogger(GestionContenidoDOM.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        } catch (TransformerConfigurationException e) {
+            e.printStackTrace();
         }
         
-        // configuramos una propiedad del transformer dependiendo del valor que le estamos pasando: Y/N (formateado o no, todo en una linea o cada nodo en una)
         transformer.setOutputProperty(OutputKeys.INDENT, indent);
         
         return transformer;
     }
     
-    public void generarArchivo(String nombreArchivo, String indent){
+    /**
+     * Guarda el documento xml en un archivo
+     * @param nombreArchivo             Nombre del archivo donde guardar el xml
+     * @param indent                    Indentación
+     */
+    public void generarArchivodelDOM(String nombreArchivo, String indent){
         
         try {
-            // Indicamos el origen
+            // Origen a convertir
             Source source = new DOMSource(this.documento);
-            // Indicamos la salida
+        
+            // Archivo de salida
             Result salida = new StreamResult(new File(nombreArchivo));
-            // aqui obtenemos el transformer directamente del metodo preProcess y lanzamos la conversion
             preProcess(indent).transform(source, salida);
-            
-        } catch (TransformerException ex) {
-            System.getLogger(GestionContenidoDOM.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        } catch (TransformerException e) {
+            e.printStackTrace();
         }
     }
     
-    public void mostrarPantalla(String indent){
-        /* El metodo es exactamente igual que el generarArchivo pero en vez de poner la salida a un new File("mombreFile");
-        lo redirecciona al System.out para mostrar por la consola
-        */
-         try {
-            // Indicamos el origen
-            Source source = new DOMSource(this.documento);
-            // Indicamos la salida
-            Result salida = new StreamResult(System.out);
-            // aqui obtenemos el transformer directamente del metodo preProcess y lanzamos la conversion
-            preProcess(indent).transform(source, salida);
-            
-        } catch (TransformerException ex) {
-            System.getLogger(GestionContenidoDOM.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
-    }
-
-    public void cargarArchivoEnMemoria(String nombreArchivo){
-        
+    /**
+     * Muesta el contenido xml por consola
+     * @param indent                    Indentación
+     */
+    public void mostrarPorPantalla(String indent){
         try {
-            this.documento = this.builder.parse(new File(nombreArchivo));
-            this.documento.getDocumentElement().normalize(); // el normalize quita elementos raros el XML
-            
-        } catch (SAXException | IOException ex) {
-            System.getLogger(GestionContenidoDOM.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
+            // Origen a convertir
+            Source source = new DOMSource(this.documento);
         
+            // Archivo de salida
+            Result salida = new StreamResult(System.out);
+            preProcess(indent).transform(source, salida);
+        } catch (TransformerException e) {
+            e.printStackTrace();
+        }
     }
-
+    
+    /**
+     * Carga un archivo xml existente en memoria
+     * @param nombreArchivo             Nombre del archivo a cargar
+     */
+    public void cargarArchivoEnMemoria(String nombreArchivo){
+        try{
+            this.documento = this.builder.parse(new File(nombreArchivo));
+            this.documento.getDocumentElement().normalize();
+        } catch(SAXException | IOException e){
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Devuelve el nombre del nodo raíz del documento
+     * @return 
+     */
     public String getElementPrincipal(){
         return this.documento.getDocumentElement().getNodeName();
+        
     }
     
+    /**
+    * Extrae el valor de texto de un nodo hijo de forma segura.
+    * @param tag             Nombre del nodo hijo
+    * @param element         Elemento padre
+    * @return               Valor del elemento extraído, o una cadena vacía ("") si no se encuentra el nodo o no tiene valor.
+    */
     public String getTagValue(String tag, Element element){
-        
-        NodeList nodeList = element.getElementsByTagName(tag).item(0).getChildNodes();
-        
-        Node node = nodeList.item(0);
-        
-        if(node != null) {
-            return node.getNodeValue();
-        }else{
-            return null;
-        }
-    }
+       // 1. Obtener la lista de nodos con el nombre de la etiqueta
+       NodeList tagList = element.getElementsByTagName(tag);
 
+       // 2. Verificar si se encontró al menos un nodo (¡CRUCIAL!)
+       if (tagList.getLength() > 0) {
+
+           // 3. Obtener el primer elemento de la lista
+           Node tagNode = tagList.item(0);
+
+           // 4. Si el nodo del elemento existe, usar getTextContent() (es más seguro)
+           if (tagNode != null) {
+               // getTextContent() devuelve el valor del nodo de texto contenido en la etiqueta.
+               // Devuelve una cadena vacía si el nodo existe pero no tiene contenido.
+               return tagNode.getTextContent();
+           }
+       }
+
+       // 5. Devolver una cadena vacía si la etiqueta no existe o no tiene valor. 
+       // Esto es mejor que devolver 'null' ya que evita NullPointerException al llamar a métodos como .isEmpty() o .length()
+       return "";
+   }
+    
+    /**
+     * Devuelve todos los nodos con el nombre dado
+     * @param tag               Nombre de los nodos
+     * @return                  Nodos extraidos con el nombre
+     */
     public NodeList getNodesValue(String tag){
-        NodeList empleados = this.documento.getElementsByTagName(tag);
+        NodeList empleados = documento.getElementsByTagName(tag);
         
         return empleados;
     }
+    
+    // ... (código previo)
 
-    public Empleado getEmpleado (Node node) {
-        
-        Empleado emple = new Empleado();
-        
-        if (node.getNodeType() == Node.ELEMENT_NODE){
-            Element element = (Element) node;
-            emple.setIdentificador(Long.parseLong(getTagValue("identificador", element)));
-            emple.setApellido(getTagValue("apellido", element));
-        }
-        return emple;
-    }
+    /**
+    * Convierte un nodo xml en un objeto Empleado.
+    * @param node               Nodo a convertir (debe ser un elemento "Empleado")
+    * @return                   Nodo convertido a objeto Empleado
+    */
+    public Empleado getEmpleado(Node node){
+       Empleado emple = new Empleado();
+
+       if(node.getNodeType() == Node.ELEMENT_NODE){
+           Element element = (Element) node;
+
+           // 1. Identificador: AHORA INCLUYE COMPROBACIÓN CONTRA CADENA VACÍA
+           String idStr = getTagValue("identificador" , element);
+           if (idStr != null && !idStr.isEmpty()) { // <--- **CORRECCIÓN CLAVE**
+               try {
+                   emple.setIdentificador(Long.parseLong(idStr));
+               } catch (NumberFormatException e) {
+                   System.err.println("Error al parsear el identificador: " + idStr);
+               }
+           }
+
+
+           // 2. Apellido: Asumiendo que setApellido espera un String
+           emple.setApellido(getTagValue("apellido", element));
+
+           // 3. Departamento: Convertir String a INT (Ya tenía la comprobación)
+           String depStr = getTagValue("departamento", element);
+           if (depStr != null && !depStr.isEmpty()) {
+               try {
+                   // Conversión de String a int
+                   emple.setDepartamento(Integer.parseInt(depStr));
+               } catch (NumberFormatException e) {
+                   // Manejo de error si el valor no es un número válido
+                   System.err.println("Error al parsear el departamento: " + depStr);
+               }
+           }
+
+
+           // 4. Salario: Convertir String a DOUBLE (Ya tenía la comprobación)
+           String salStr = getTagValue("salario", element);
+           if (salStr != null && !salStr.isEmpty()) {
+               try {
+                   // Conversión de String a double
+                   salStr = salStr.replace(',', '.');
+                   emple.setSalario(Double.parseDouble(salStr));
+               } catch (NumberFormatException e) {
+                   // Manejo de error si el valor no es un número válido
+                   System.err.println("Error al parsear el salario: " + salStr);
+               }
+           }
+       }
+       return emple;
+   }
+   
+
     
-    
+    /**
+     * Devuelve un alista de todos los empleados en el documento
+     * @return                  Todos los empleados en una lista
+     */
     public List<Empleado> getEmpleados(){
-        
         List<Empleado> empleList = new ArrayList<Empleado>();
-        
         NodeList nodeList = this.documento.getElementsByTagName("Empleado");
-       
-        int longitud = nodeList.getLength();
-        for(int i = 0; i < longitud; i++){
-           empleList.add(getEmpleado(nodeList.item(i))); 
-        }
         
+        for(int i = 0; i < nodeList.getLength(); i ++){
+            empleList.add(getEmpleado(nodeList.item(i)));
+        }
         return empleList;
     }
     
-    public void addElement(){
+    /**
+     * Añade un nodo cargo con un valor a cada empleado
+     */
+    public void addCargoEmpleado(){
         NodeList empleados = this.documento.getElementsByTagName("Empleado");
-        for(int i = 0; i < empleados.getLength(); i++){
-            addNodoYTexto("Cargo", "Por especificar", (Element) empleados.item(i));
+        for(int i = 0; i < empleados.getLength(); i ++){
+            GestionContenidoDOM.this.addNodoYTexto("Cargo", "Por especificar", (Element) empleados.item(i));
         }
     }
     
-     public void addElement(String padre, String elemHijo, String valor){
-        NodeList empleados = this.documento.getElementsByTagName(padre); 
-        for(int i = 0; i < empleados.getLength(); i++){
-            addNodoYTexto(elemHijo, valor, (Element) empleados.item(i));
-        }
-    }
-     
-    public void eliminarElemento(Element elementoPadre, String elementoHijo){
-        NodeList nodeList = elementoPadre.getElementsByTagName(elementoHijo);
-       
-        if (nodeList != null && nodeList.getLength() > 0){
-            Node ele = nodeList.item(0);
-            
-            ele.getParentNode().removeChild(ele);
-        }
-    }
-    
-    
-    public void eliminarElemento(String elementoPadre, String elementoHijo){
-        NodeList nodeList = this.documento.getElementsByTagName(elementoPadre);
-        
-        for(int i = 0; i < nodeList.getLength(); i++){
-            Element empleElemento = (Element)nodeList.item(i);
-            NodeList elementos = empleElemento.getElementsByTagName(elementoHijo);
-           if (elementos.getLength() > 0){
-                Node ele = elementos.item(0);
-                empleElemento.removeChild(ele);
-            
-           }
-        }
-
-    }
-    
-    public void modificarEtiqueta(long identificador,String etiqueta,String valor){
-        // Obtenemos todos los nodos <Empleado>
-        NodeList nodeList = this.documento.getElementsByTagName("Empleado");
-        
-        for (int i = 0; i < nodeList.getLength(); i++){
-            Element elem = (Element)nodeList.item(i);
-            String idEmple = getTagValue("identificador", elem);
-            
-            if(Long.parseLong(idEmple) == identificador){
-                NodeList salarios = elem.getElementsByTagName(etiqueta);
-                
-                if(salarios.getLength() > 0){ // si ya hay algun saldo, cambia el contenido
-                    salarios.item(0).setTextContent(valor);
-                } else { // y si no, crea un nuevo saldo
-                    addNodoYTexto(etiqueta,valor,elem);
-                }
-                             
+    /**
+     * Elimina el nodo hijo de cada nodo padre
+     * @param elemPadre             Nodo padre en el que se encuentra el nodo hijo
+     * @param elemHijo              Nodo hijo que se quiere eliminar del nodo padre
+     */
+    public void eliminarElementEmpleados(String elemPadre, String elemHijo){
+        NodeList listaPadres = this.documento.getElementsByTagName(elemPadre);
+        for(int i = 0; i < listaPadres.getLength(); i ++){
+            Element elemEmpleado = (Element) listaPadres.item(i);
+            NodeList elementos = elemEmpleado.getElementsByTagName(elemHijo);
+            if(elementos.getLength() > 0){
+                Node elem = elementos.item(0);
+                elemEmpleado.removeChild(elem);
             }
         }
     }
+    
+    /**
+     * Modifica o añade el nodo salario de un empleado
+     * @param identificador             Identificador del empleado
+     * @param nuevoSalario              Salario a añadir al empleado
+     */
+    public void modificarSalario(int identificador, String nuevoSalario){
+    NodeList empleados = this.documento.getElementsByTagName("Empleado");
+    for(int i = 0; i < empleados.getLength(); i ++){
+        Element elemEmpleado = (Element) empleados.item(i);
+        String idEmpleado = getTagValue("identificador", elemEmpleado);
 
+        if(Long.parseLong(idEmpleado) == identificador){
+            NodeList salarios = elemEmpleado.getElementsByTagName("Salario");
 
+            if(salarios.getLength() > 0){
+                // *** Modificación Corregida (Si ya existe) ***
+                // 1. Obtenemos el elemento Salario existente
+                Element elementoSalario = (Element) salarios.item(0);
 
+                // 2. Limpiamos cualquier contenido de texto o nodo hijo previo
+                // Esto es clave para evitar que el valor se "añada" en lugar de reemplazarse
+                // en ciertos escenarios o implementaciones del DOM.
+                while (elementoSalario.hasChildNodes()) {
+                    elementoSalario.removeChild(elementoSalario.getFirstChild());
+                }
+
+                // 3. Establecemos el nuevo contenido de texto
+                elementoSalario.setTextContent(nuevoSalario);
+
+            } else{
+                // *** Añadir (Si no existe) ***
+                // Se asume que este método crea un nuevo nodo <Salario> con el texto y lo añade a elemEmpleado
+                addNodoYTexto("Salario", nuevoSalario, elemEmpleado);
+            }
+            return;
+        }
+    }
 }
-
+}
