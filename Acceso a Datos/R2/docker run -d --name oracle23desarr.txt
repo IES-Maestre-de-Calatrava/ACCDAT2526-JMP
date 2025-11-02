@@ -1,0 +1,1 @@
+docker run -d --name oracle23desarrollo -p 1521:1521 -e ORACLE_PASSWORD=oracle -e ORACLE_CHARACTERSET=AL32UTF8 -v oradata:/opt/oracle/oradata gvenzl/oracle-free:slim

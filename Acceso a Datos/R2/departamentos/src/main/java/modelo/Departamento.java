@@ -11,32 +11,19 @@ import java.util.Optional;
 
 /**
  *
- * @author Javier Molina
+ * @author b15-11m
  * Created on 21 oct 2025
  */
 public class Departamento {
     private int dept_no;
     private String dnombre;
     private String loc;
-    
-    
-    private final static String SELECTALL = "SELECT d.* FROM departamentos d";
-    private final static String SELECTID = "SELECT d.* FROM departamentos d WHERE d.dept_no = ?";
-    private final static String INSERT = "insert into Departamentos values (?,?,?)";
-    private final static String INSERTAUTO = "insert into Departamentos (dnombre, loc) values (?,?)";
-    private final static String UPDATE = "update Departamentos set dnombre=?, loc=? where dept_no=?";
-    private final static String DELETE = "delete from Departamentos where dept_no=?";
 
     public Departamento() {
     }
 
     public Departamento(int dept_no, String dnombre, String loc) {
         this.dept_no = dept_no;
-        this.dnombre = dnombre;
-        this.loc = loc;
-    }
-    
-    public Departamento(String dnombre, String loc){
         this.dnombre = dnombre;
         this.loc = loc;
     }
@@ -74,7 +61,7 @@ public class Departamento {
         Optional<ResultSet> rs = null;
         
         try {
-            rs = bbdd.select(SELECTALL);
+            rs = bbdd.select("SELECT d.* FROM departamentos d");
         } catch (SQLException ex) {
             System.getLogger(Departamento.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
@@ -86,7 +73,7 @@ public class Departamento {
         Optional<ResultSet> rs = null;
         
         try {
-            rs = bbdd.select(SELECTID, dept_no); 
+            rs = bbdd.select("SELECT d.* FROM departamentos d WHERE d.dept_no = ?", dept_no); 
             if(rs.isPresent()){
                 while (rs.get().next()) {
                     this.setDept_no(rs.get().getInt("dept_no"));
@@ -100,61 +87,29 @@ public class Departamento {
         
     }
     
-    public static void mostrarResultado(Optional<ResultSet> rs){
+    // Esto debería de ir en la vista
+    public static void MostrarResultado(Optional<ResultSet> rs){
         
         try {
             if(rs.isPresent()){
                 while (rs.get().next()){
-                    System.out.println("Numero departamento: " + rs.get().getInt("dept_no") +
-                        ". Nombre: " + rs.get().getString("dnombre") + ". Localidad: " + rs.get().getString("loc"));
+                    System.out.println("Número departamento: "+rs.get().getInt("dept_no")+
+                            " Nombre: "+rs.get().getString("dnombre")+
+                            " Localidad: "+rs.get().getString("loc"));
                 }
             }
-        } catch (SQLException ex) {
-            System.getLogger(Departamento.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
-    }
-    
-    public void insertar(OperacionesBBDD bbdd){
-        try {
-            bbdd.insert(INSERT, this.dept_no, this.dnombre, this.loc);
-        } catch (SQLException ex) {
-            System.getLogger(Departamento.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
-    }
-    
-    public String insertarAuto(OperacionesBBDD bbdd){
-        String rowid = null;
-        
-        try {
-            Optional<ResultSet> rs = bbdd.insert(INSERTAUTO, this.dnombre, this.loc);
             
-            if(rs.isPresent()){
-                rs.get().next();
-                rowid = rs.get().getString(1);
-                
-            }
-            
-            return rowid;
         } catch (SQLException ex) {
             System.getLogger(Departamento.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
-        
-        return rowid;
     }
     
-    public int update(OperacionesBBDD bbdd){
-        int i;
-        
-        i = bbdd.updateDeleteQuery(UPDATE, this.dnombre, this.loc, this.dept_no);
-        
-        return i;
+    public void Insertar(OperacionesBBDD bbdd){
+        try {
+            bbdd.insert("insert into departamentos values (?,?,?)", this.dept_no, this.dnombre this.loc);
+        } catch (SQLException ex) {
+            System.getLogger(Departamento.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }
     
-    public int delete(OperacionesBBDD bbdd){
-        int i;
-        
-        i = bbdd.updateDeleteQuery(DELETE, this.dept_no);
-        
-        return i;
-    }
 }

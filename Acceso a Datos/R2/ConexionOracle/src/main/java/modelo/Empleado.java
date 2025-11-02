@@ -56,7 +56,7 @@ public class Empleado {
         this.comision = comision;
         this.dept_no = dept_no;
         
-        this.fecha_alt = convertirFecha(fecha_alt);
+        //this.fecha_alt = convertirFecha(fecha_alt);
     }
     
     public int getEmp_no() {
@@ -108,7 +108,7 @@ public class Empleado {
     }
 
     public void setFecha_alt(String fecha_alt) {
-        this.fecha_alt = convertirFecha(fecha_alt);
+        //this.fecha_alt = OperacionesBBDD.convertirFecha(fecha_alt);
     }
 
     public void setSalario(double salario) {
@@ -127,19 +127,6 @@ public class Empleado {
     public String toString() {
         return "Empleado{" + "emp_no=" + emp_no + ", apellido=" + apellido + ", oficio=" + oficio + ", dir=" + dir + ", fecha_alt=" + fecha_alt + ", salario=" + salario + ", comision=" + comision + ", dept_no=" + dept_no + '}';
     }    
-    
-    
-    private Date convertirFecha(String fecha) {
-        java.util.Date fechaUtil = null;
-        try{
-            SimpleDateFormat s = new SimpleDateFormat("DD/MM/YYYY");
-            fechaUtil = s.parse(fecha);
-        } catch(ParseException ex){
-            System.getLogger(Empleado.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-
-        }
-        return new java.sql.Date(fechaUtil.getTime());
-    }
     
     
     public static Optional<ResultSet> selectAll(OperacionesBBDD bbdd){

@@ -25,12 +25,11 @@ public class Conexionoracle {
     */
     public static void main(String[] args) {
         
-        /*
-        Departamento departamento = new Departamento();
-        departamento.SelectById(bbdd, 10);
-        System.out.println(departamento);
-        */
         
+        Departamento departamento = new Departamento();
+        Optional<ResultSet> rsOpt = departamento.selectAll(bbdd);
+        Departamento.mostrarResultado(rsOpt);
+
         // Departamento.MostrarResultado(Departamento.selectAll(bbdd));
         
         // Ejemplo de insertar
@@ -86,6 +85,7 @@ public class Conexionoracle {
         */
         
         
+        /*
         // EJEMPLO DE DELETE EMPLEADO
         Empleado empleado = new Empleado();
         empleado.setDept_no(40);
@@ -98,7 +98,7 @@ public class Conexionoracle {
         } else{
             System.out.println(mensaje);
         }
-        
+        */
         
 
     }

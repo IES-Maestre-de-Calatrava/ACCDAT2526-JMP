@@ -6,19 +6,16 @@
 package modelo;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Optional;
 import java.util.Properties;
 
 /**
  *
- * @author Javier Molina
+ * @author b15-11m
  * Created on 20 oct 2025
  */
 public class OperacionesBBDD {
@@ -30,8 +27,22 @@ public class OperacionesBBDD {
     
     private PreparedStatement preparedStatement;
     
+    // Instancia Singleton
+    private static OperacionesBBDD instance;
     
-    // Método para abrir la conexión, constructor
+    // Método para obtener la instancia única
+    public static OperacionesBBDD getInstancia() {
+        try {
+            if (instance == null || instance.getConexion().isClosed()) {
+                instance = new OperacionesBBDD();
+            }
+        } catch (SQLException ex) {
+            System.getLogger(OperacionesBBDD.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+        return instance;
+    }
+    
+    // Método para abrir la conexión
     private OperacionesBBDD() {
         if (this.conexion == null) {
             try {
@@ -50,34 +61,6 @@ public class OperacionesBBDD {
         }
     }
     
-    
-    
-    // Getter para obtener la conexión actual
-    public Connection getConexion() {
-        return this.conexion;
-    }
-    
-    
-    // Instancia Singleton
-    private static OperacionesBBDD instance;
-    
-    // Método para obtener la instancia única
-    public static OperacionesBBDD getInstancia() {
-        try {
-            if (instance == null || instance.getConexion().isClosed()) {
-                instance = new OperacionesBBDD();
-            }
-        } catch (SQLException ex) {
-            System.getLogger(OperacionesBBDD.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
-        return instance;
-    }
-    
-    
-    
-    
-    
-    
     // Método para cerrar la conexión
     public void cierraConexion() {
         if (this.conexion != null) {
@@ -90,25 +73,32 @@ public class OperacionesBBDD {
         }
     }
     
-    
-    private Date convertirFecha(String fecha) {
-        java.util.Date fechaUtil = null;
-        try{
-            SimpleDateFormat s = new SimpleDateFormat("DD/MM/YYYY");
-            fechaUtil = s.parse(fecha);
-        } catch(ParseException ex){
-            System.getLogger(Empleado.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-
-        }
-        return new java.sql.Date(fechaUtil.getTime());
+    // Getter para obtener la conexión actual
+    public Connection getConexion() {
+        return this.conexion;
     }
     
-    
+    /*
+    public void selectDept(int dep, Connection conn){
+        
+        try {
+            String sql = "SELECT * FROM departamentos WHERE dept_no=?";
+        
+            PreparedStatement sentencia = conn.prepareStatement(sql);
+
+            sentencia.setInt(1, dep);
+            ResultSet rs = sentencia.executeQuery();
+            
+            rs.close();
+            sentencia.close();
+        } catch (SQLException ex) {
+            System.getLogger(OperacionesBBDD.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }
+    */
     
     private ResultSet executeQuery(String querySQL, Object ... params) throws SQLException{
         
-        // el preparedStatement es como que te prepara la consulta en MEMORIA (solo se meteria una vez)
-        // para que le pases solo los parametros, y tenerla de base
         preparedStatement = conexion.prepareStatement(querySQL);
        
         for(int i=0; i < params.length; i++){
@@ -119,49 +109,21 @@ public class OperacionesBBDD {
        
     }
    
-    public Optional<ResultSet> select(String querySQL, Object ... params) throws SQLException{
+    public Optional<ResultSet> select (String querySQL, Object ... params) throws SQLException{
         return Optional.of(executeQuery(querySQL, params));
     }
     
     
-    /**
-     * Inserta en una tabla con la posibilidad de que devuelva el row Id unico de oracle
-     * 
-     * @param insertSQL
-     * @param params
-     * @return
-     * @throws SQLException 
-     */
-    public Optional<ResultSet> insert(String insertSQL, Object... params) throws SQLException{
-        
+    public void insert(String insertSQL, Object ... params) throws SQLException{
         
         preparedStatement = conexion.prepareStatement(insertSQL, PreparedStatement.RETURN_GENERATED_KEYS);
         
         for(int i=0; i < params.length; i++){
             preparedStatement.setObject(i+1, params[i]);
         }
+       
         preparedStatement.executeUpdate();
-        
-        return Optional.of(preparedStatement.getGeneratedKeys());
     }
-    
-    
-    
-    
-    public int updateDeleteQuery(String genericSQL, Object... params){
-        try {
-            preparedStatement = conexion.prepareStatement(genericSQL);
-            
-            for(int i = 0; i < params.length; i ++){
-                preparedStatement.setObject(i+1, params[i]);
-            } 
-            return preparedStatement.executeUpdate();
-            
-        } catch (SQLException ex) {
-            System.getLogger(OperacionesBBDD.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
-        
-        return 0;
-    }
-    
+
+
 }
