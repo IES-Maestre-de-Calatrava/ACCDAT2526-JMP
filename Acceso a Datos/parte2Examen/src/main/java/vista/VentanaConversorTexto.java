@@ -53,15 +53,10 @@ public class VentanaConversorTexto implements InterfazVista {
     }
     
     public void escribirMenu(){
-        System.out.println("=========================================================");
-        System.out.println("0. SALIR");
-        System.out.println("--RECEPCION--");
-        System.out.println(ALTA_VEHICULO);
-        System.out.println(ALTA_VEHICULO_MATRICULA); 
-        System.out.println("--TALLER--");
-        System.out.println(CARGAR_VEHICULO);
-        System.out.println(REPARACION);
-        System.out.println("==========================================================");
+        System.out.println("Elige una opcion:");
+        System.out.println(CREAR_ARBOLDOM);
+        System.out.println(COVERTIR_A_HMTL);
+        System.out.println("0. Salir");
     }
     
     public int leerOpcion(){
@@ -92,10 +87,8 @@ public class VentanaConversorTexto implements InterfazVista {
         operacion = leerOpcion();
         
         switch(operacion){
-            case 1 -> controlador.ActionPerformed(new ActionEvent(this, operacion, ALTA_VEHICULO));
-            case 4 -> controlador.ActionPerformed(new ActionEvent(this, operacion, ALTA_VEHICULO_MATRICULA)); // Si usas '4'
-            case 2 -> controlador.ActionPerformed(new ActionEvent(this, operacion, CARGAR_VEHICULO));
-            case 3 -> controlador.ActionPerformed(new ActionEvent(this, operacion, REPARACION));
+            case 1 -> controlador.ActionPerformed(new ActionEvent(this, operacion, CREAR_ARBOLDOM));
+            case 2 -> controlador.ActionPerformed(new ActionEvent(this, operacion, COVERTIR_A_HMTL));
             
             case 0 -> {
                 System.out.println("Adios");
@@ -112,16 +105,22 @@ public class VentanaConversorTexto implements InterfazVista {
     
     public long pedirId(){
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Introduce el id del coche: ");
+        System.out.println("Introduce el id del opositor que realiza la reclamación: ");
         long id = scanner.nextLong();
         return id;
     }
     
-    
-    @Override
-    public void mostrarMensaje(String mensaje) {
-        // Simplemente imprime el mensaje en la consola
-        System.out.println(mensaje);
+    public String pedirRespuestas(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Introduce las nuevas respuestas para recalcular la nota: ");
+        String respuestas = scanner.nextLine();
+        return respuestas;
     }
     
+    public String pedirRuta(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Introduce la ruta del fichero binario de acceso aleatorio: ");
+        String ruta = scanner.nextLine();
+        return ruta;
+    }
 }

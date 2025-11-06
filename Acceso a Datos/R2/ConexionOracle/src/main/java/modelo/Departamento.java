@@ -5,8 +5,10 @@
 
 package modelo;
 
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Optional;
 
 /**
@@ -157,4 +159,52 @@ public class Departamento {
         
         return i;
     }
+
+    public static String pNombreDepart(OperacionesBBDD bbdd, int dept_no){
+        CallableStatement llamada;
+        String dnombre = null;
+        String sql = "{call p_nombre_depart (?,?)}";
+        
+        try {
+            llamada = bbdd.getConexion().prepareCall(sql);
+            
+            llamada.setInt(1, dept_no); // en ese primer paramatro va el dept_no
+            
+            llamada.registerOutParameter(2, Types.VARCHAR); // el segundo parametro es de salida
+            
+            llamada.executeUpdate();  // LO ejecuto
+            
+            dnombre = llamada.getString(2); // recupero el nombre de la salida con getString()
+            
+        } catch (SQLException ex) {
+            System.getLogger(Departamento.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+        
+        return dnombre;
+    }
+    
+    public static String fNombredepart(OperacionesBBDD bbdd, int dept_no){
+        CallableStatement llamada;
+        String dnombre = null;
+        String sql = "{? = call f_nombre_depart (?)}";
+        
+        try {
+            llamada = bbdd.getConexion().prepareCall(sql);
+            
+            llamada.registerOutParameter(1, Types.VARCHAR); // el primer parametro es de salida
+            
+            llamada.setInt(2, dept_no); // en ese segundo paramatro va el dept_no, parametro entrada
+                       
+            llamada.executeUpdate();  // Lo ejecuto
+            
+            dnombre = llamada.getString(1); // recupero el nombre de la salida con getString()
+            
+        } catch (SQLException ex) {
+            System.getLogger(Departamento.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+        
+        return dnombre;
+    }
+    
+
 }

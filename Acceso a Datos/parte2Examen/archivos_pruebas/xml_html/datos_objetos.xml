@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Objetos>
+    <objeto>
+        <id>1</id>
+        <dni>12345678A</dni>
+        <apellidos>García Retamero</apellidos>
+        <nombre>Javier</nombre>
+        <respuestas>bbdcdbacda</respuestas>
+        <nota>7</nota>
+    </objeto>
+    <objeto>
+        <id>7</id>
+        <dni>78901234G</dni>
+        <apellidos>Moreno Castro</apellidos>
+        <nombre>David</nombre>
+        <respuestas>bdacdacbba</respuestas>
+        <nota>5</nota>
+    </objeto>
+    <objeto>
+        <id>8</id>
+        <dni>89012345H</dni>
+        <apellidos>Jiménez Navarro</apellidos>
+        <nombre>Laura</nombre>
+        <respuestas>cbadbdacdc</respuestas>
+        <nota>5</nota>
+    </objeto>
+    <objeto>
+        <id>15</id>
+        <dni>55667788O</dni>
+        <apellidos>Ortega Salas</apellidos>
+        <nombre>Raúl</nombre>
+        <respuestas>dcabdcabdc</respuestas>
+        <nota>5</nota>
+    </objeto>
+    <objeto>
+        <id>18</id>
+        <dni>88990011R</dni>
+        <apellidos>Navarro Rubio</apellidos>
+        <nombre>Beatriz</nombre>
+        <respuestas>dbacdbacbd</respuestas>
+        <nota>6</nota>
+    </objeto>
+    <objeto>
+        <id>20</id>
+        <dni>10111213T</dni>
+        <apellidos>Molina Vázquez</apellidos>
+        <nombre>Natalia</nombre>
+        <respuestas>bdacbdacbd</respuestas>
+        <nota>6</nota>
+    </objeto>
+</Objetos>

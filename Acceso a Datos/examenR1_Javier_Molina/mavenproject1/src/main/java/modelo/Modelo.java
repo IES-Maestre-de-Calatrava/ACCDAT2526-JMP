@@ -16,6 +16,13 @@ import java.util.Scanner;
  * Created on 3 nov 2025
  */
 public class Modelo {
+    
+    // Campo para guardar el id del coche que se ha cargado o está en uso
+    private long idCocheActivo = 0;
+    
+    public long getIdCocheActivo(){
+        return idCocheActivo;
+    }
         
     public void altaVehiculo(long id){
         long posicion = 0;
@@ -33,18 +40,6 @@ public class Modelo {
                  // Colocamos el puntero y creamos el coche
                 raf.seek(posicion);
                 Coche coche = new Coche(); 
-                
-                long inicioRespuestas = posicion+ 
-                    Coche.getLONGITUD_IDENTIFICADOR_EN_BYTES() + 
-                    Coche.getLONGITUD_MATRICULA_EN_BYTES() +
-                    Coche.getLONGITUD_TELEFONO_EN_BYTES() + 
-                    Coche.getLONGITUD_NOMBRE_CONTACTO_EN_BYTES() + 
-                    Coche.getLONGITUD_DIAGNOSTICO_EN_BYTES() +
-                    Coche.getLONGITUD_REPARACION_EN_BYTES() +
-                    Coche.getLONGITUD_COSTE_EN_BYTES() +
-                    Coche.getLONGITUD_FECHA_REPARACION_EN_BYTES();
-                
-                raf.seek(inicioRespuestas);
                 
                 String matricula = pedirMatricula();
                 String nombreContacto = pedirNombreContacto();
@@ -89,6 +84,87 @@ public class Modelo {
         }catch(IOException ex){
             System.getLogger(Modelo.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
 
+        }
+    }
+    
+    
+
+    /**
+     * Pide una matrícula y busca el coche asociado en el archivo.
+     * Si lo encuentra, muestra su ID. 
+     * Si no, pide el resto de datos y añade el nuevo vehículo.
+     */
+    public void altaVehiculoPorMatricula() {
+        String matriculaBuscada = pedirMatricula();
+        Coche cocheEncontrado = null;
+        long posicionRegistro = 0;
+        long nuevoId = 1; // Primer ID por defecto
+
+        try (RandomAccessFile raf = new RandomAccessFile(".\\archivos_pruebas\\datos_coches.dat", "rw")) {
+
+            // 1. Buscamos la matrícula recorriendo el archivo
+            while (raf.getFilePointer() < raf.length()) {
+
+                posicionRegistro = raf.getFilePointer(); // Guardamos el inicio del registro actual
+
+                // Leemos solo el ID y la matrícula para verificar
+                long idActual = raf.readLong(); 
+                String matriculaActual = leerCampoTexto(raf, Coche.getLONGITUD_MATRICULA_EN_BYTES());
+
+                // Si hay coincidencia, guardamos el coche y salimos del bucle
+                if (matriculaActual.trim().equalsIgnoreCase(matriculaBuscada.trim())) {
+
+                    // Volvemos al inicio del registro para leer el coche completo
+                    raf.seek(posicionRegistro);
+                    cocheEncontrado = leerCoche(raf); 
+                    System.out.println("✅ MATRÍCULA ENCONTRADA. ID del vehículo: " + cocheEncontrado.getId());
+                    System.out.println("Datos: Matricula: " + cocheEncontrado.getMatricula() + ", Contacto: " + cocheEncontrado.getNombreContacto());
+                    return; // Salimos del método si se encontró
+                } else {
+                    // Si no hay coincidencia, saltamos al siguiente registro
+
+                    // Calculamos el resto de bytes que quedan del registro actual:
+                    long bytesRestantes = Coche.getLONGITUD_TOTAL() - 
+                                          Coche.getLONGITUD_IDENTIFICADOR_EN_BYTES() - 
+                                          Coche.getLONGITUD_MATRICULA_EN_BYTES();
+
+                    // Movemos el puntero al inicio del siguiente registro
+                    raf.seek(raf.getFilePointer() + bytesRestantes);
+
+                    // Llevamos la cuenta del ID para el nuevo coche
+                    nuevoId = idActual + 1;
+                }
+            }
+
+            // 2. Si llegamos aquí, la matrícula NO se encontró. Procedemos al ALTA.
+
+            // Nos posicionamos al final del archivo para escribir el nuevo registro
+            raf.seek(raf.length());
+            posicionRegistro = raf.length();
+
+            System.out.println("❌ MATRÍCULA NO ENCONTRADA. Procediendo a dar de ALTA el vehículo con ID: " + nuevoId);
+
+            // Pedimos el resto de datos que faltan
+            String nombreContacto = pedirNombreContacto();
+            int telefono = pedirTelefono();
+            String diagnostico = pedirDiagnostico();
+
+            // Escribimos el nuevo registro
+            raf.writeLong(nuevoId); // 1. ID
+            escribirTexto(raf, matriculaBuscada, Coche.getCARACTERES_MATRICULA()); // 2. Matrícula
+            raf.writeInt(telefono); // 3. Teléfono
+            escribirTexto(raf, nombreContacto, Coche.getCARACTERES_NOMBRE_CONTACTO()); // 4. Nombre Contacto
+            escribirTexto(raf, diagnostico, Coche.getCARACTERES_DIAGNOSTICO()); // 5. Diagnóstico
+            escribirTexto(raf, " ", Coche.getCARACTERES_REPARACION()); // 6. Reparacion
+            raf.writeLong(0); // 7. Coste
+            escribirTexto(raf, " ", Coche.getCARACTERES_FECHA_REPARACION()); // 8. Fecha Reparación
+
+            System.out.println("Vehículo añadido con éxito con ID: " + nuevoId);
+
+        } catch (FileNotFoundException ex) {
+            System.getLogger(Modelo.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        } catch (IOException ex) {
+            System.getLogger(Modelo.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }
     
@@ -185,7 +261,7 @@ public class Modelo {
             // 2º Comprobamos que existe el coche
             if (posicion >= raf.length() || posicion < 0) {
                 System.out.println("No existe el coche con Id:" + idCargarVehiculo);
-           
+                this.idCocheActivo = 0; // Si falla, resetamos
             }else{
                 
                  //3º Colocamos el puntero y leemos el registro del coche
@@ -194,6 +270,7 @@ public class Modelo {
    
                 System.out.println("Coche con id: "+idCargarVehiculo+" Matricula: "+coche.getMatricula()+", Nombre Contacto: "+coche.getNombreContacto()+", Diagnostico: "+coche.getDiagnostico()+", Reparacion: "+coche.getReparacion()+", Coste: "+coche.getCoste()+", Fecha Reparacion: "+coche.getFechaReparacion());
                 
+                this.idCocheActivo = idCargarVehiculo; // Almaceno el ID!
             }
         }
     }
@@ -213,20 +290,16 @@ public class Modelo {
                 System.out.println("No existe ese id");
             
             }else{
-                
-                raf.seek(posicion); 
-                
+                                
                 long inicioRespuestas = posicion+ 
                     Coche.getLONGITUD_IDENTIFICADOR_EN_BYTES() + 
                     Coche.getLONGITUD_MATRICULA_EN_BYTES() +
                     Coche.getLONGITUD_TELEFONO_EN_BYTES() + 
                     Coche.getLONGITUD_NOMBRE_CONTACTO_EN_BYTES() + 
-                    Coche.getLONGITUD_DIAGNOSTICO_EN_BYTES() + 
-                    Coche.getLONGITUD_REPARACION_EN_BYTES();
-                    
+                    Coche.getLONGITUD_DIAGNOSTICO_EN_BYTES();                    
                 
                 raf.seek(inicioRespuestas);
-                Coche coche = leerCoche(raf);
+                Coche coche = new Coche();
                 
                 String reparacion = pedirReparacion();
                 long coste = pedirCoste();
@@ -278,9 +351,5 @@ public class Modelo {
          String reparacion = scanner.nextLine();
          return reparacion;
     }
-      
-
-
-    
-
+       
 }

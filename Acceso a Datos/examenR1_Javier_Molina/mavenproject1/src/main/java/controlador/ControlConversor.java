@@ -38,14 +38,24 @@ public class ControlConversor {
                 modelo.altaVehiculo(id);
                 
             }
+            
+            case InterfazVista.ALTA_VEHICULO_MATRICULA -> { 
+                modelo.altaVehiculoPorMatricula();
+            }
+            
             case InterfazVista.CARGAR_VEHICULO -> {
                 long id = vista.pedirId();
                 modelo.cargarVehiculo(id);
             }
             
             case InterfazVista.REPARACION ->{
-                long id = vista.pedirId();
-                modelo.guardarReparacion(0);
+                long idActivo = modelo.getIdCocheActivo();
+                
+                if(idActivo > 0){
+                    modelo.guardarReparacion(idActivo);
+                } else {
+                    vista.mostrarMensaje("ERROR: DEBES CARGAR UN VEHICULO (Opción 2)");
+                }
 
             }
             

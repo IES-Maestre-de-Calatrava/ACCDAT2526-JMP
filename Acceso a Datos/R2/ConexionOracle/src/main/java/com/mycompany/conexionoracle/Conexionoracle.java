@@ -25,11 +25,12 @@ public class Conexionoracle {
     */
     public static void main(String[] args) {
         
-        
+        /*
         Departamento departamento = new Departamento();
         Optional<ResultSet> rsOpt = departamento.selectAll(bbdd);
         Departamento.mostrarResultado(rsOpt);
-
+        */
+        
         // Departamento.MostrarResultado(Departamento.selectAll(bbdd));
         
         // Ejemplo de insertar
@@ -100,6 +101,26 @@ public class Conexionoracle {
         }
         */
         
-
+        
+        probarLlamadaProcedimiento();
+        
+        probarLlamadaFuncion();
+        
+        probarSubidaSueldo();
+        
+        
+    }
+    
+    public static void probarLlamadaProcedimiento(){
+        System.out.println("Nombre de departamento:" + Departamento.pNombreDepart(bbdd, 10));
+    }
+    
+    public static void probarLlamadaFuncion(){
+        System.out.println("Nombre de departamento:" + Departamento.fNombredepart(bbdd, 10));
+    }
+    
+    public static void probarSubidaSueldo(){
+        System.out.println("Subida de salario realizada: ");
+        Empleado.pSubidaSalario(bbdd, 10, 300);
     }
 }

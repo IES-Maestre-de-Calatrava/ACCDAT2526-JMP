@@ -26,11 +26,9 @@ public interface InterfazVista {
     String getNombre();
     
      // Constantes para las operaciones:
-    static final String ALTA_VEHICULO = "1. ALTA VEHICULO";
-    static final String ALTA_VEHICULO_MATRICULA = "4. ALTA VEHICULO POR MATRICULA";
-    static final String CARGAR_VEHICULO = "2. CARGAR VEHICULO";
-    static final String REPARACION = "3. REPARACION";
-  
+    static final String CREAR_ARBOLDOM = "1. Crea un arbolDOM a partir de un archivo binario de acceso aleatorio y genera un xml";
+    static final String COVERTIR_A_HMTL = "2. Convierte un xml a html";
+
     
     @Override
     public String toString();
@@ -43,6 +41,8 @@ public interface InterfazVista {
     
     public long pedirId();
     
-    public void mostrarMensaje(String mensaje);
+    public String pedirRespuestas();
+    
+    public String pedirRuta();
     
 }

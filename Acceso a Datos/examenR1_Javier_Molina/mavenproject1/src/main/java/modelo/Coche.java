@@ -50,7 +50,8 @@ public class Coche {
     private static final int LONGITUD_FECHA_REPARACION_EN_BYTES = LONGITUD_CHAR * CARACTERES_FECHA_REPARACION; 
     
     // Tamaño total del registro
-    private final static int LONGITUD_TOTAL = LONGITUD_MATRICULA_EN_BYTES + 
+    private final static int LONGITUD_TOTAL = LONGITUD_IDENTIFICADOR_EN_BYTES +
+                                              LONGITUD_MATRICULA_EN_BYTES + 
                                               LONGITUD_TELEFONO_EN_BYTES + 
                                               LONGITUD_NOMBRE_CONTACTO_EN_BYTES + 
                                               LONGITUD_DIAGNOSTICO_EN_BYTES + 

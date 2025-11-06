@@ -5,9 +5,11 @@
 
 package modelo;
 
+import java.sql.CallableStatement;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
@@ -225,4 +227,27 @@ public class Empleado {
         
         return i;
     }
+    
+    
+    public static void pSubidaSalario(OperacionesBBDD bbdd, int dept_no, int cantidad){
+        CallableStatement llamada;
+        String sql = "{call p_subida_sal (?,?)}";
+        
+        try {
+            llamada = bbdd.getConexion().prepareCall(sql);
+            
+            llamada.setInt(1, dept_no); // en ese primer paramatro va el dept_no
+            
+            llamada.setInt(2, cantidad); // el segundo parametro es la cantidad
+            
+            llamada.executeUpdate();  // Lo ejecuto
+            
+            
+        } catch (SQLException ex) {
+            System.getLogger(Departamento.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+        
+    }
+    
+    
 }

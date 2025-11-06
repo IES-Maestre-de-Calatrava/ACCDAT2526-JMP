@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<vehiculos>
+    <vehiculo>
+        <matricula>3344HTC</matricula>
+        <mensaje>Ya pueden pasar a recogerlo</mensaje>
+    </vehiculo>
+    <vehiculo>
+        <matricula>2213DTD</matricula>
+        <mensaje>Ya pueden pasar a recogerlo</mensaje>
+    </vehiculo>
+</vehiculos>
