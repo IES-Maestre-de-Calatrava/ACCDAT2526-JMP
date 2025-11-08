@@ -102,12 +102,20 @@ public class Conexionoracle {
         */
         
         
-        probarLlamadaProcedimiento();
+        //probarLlamadaProcedimiento();
         
-        probarLlamadaFuncion();
+        //probarLlamadaFuncion();
         
-        probarSubidaSueldo();
+        //probarSubidaSueldo();
         
+        //probarEmpledosPorDepartamento();
+        
+        //probarCalcularSalario();
+        
+        
+        Empleado emple = new Empleado();
+        Optional<ResultSet> rsOpt = emple.selectAll(bbdd);
+        Empleado.motrarApellidoDirComisionSalario(bbdd, rsOpt);        
         
     }
     
@@ -123,4 +131,14 @@ public class Conexionoracle {
         System.out.println("Subida de salario realizada: ");
         Empleado.pSubidaSalario(bbdd, 10, 300);
     }
+    
+    public static void  probarEmpledosPorDepartamento(){
+        System.out.println("Numero de empleados del departamento: " + Empleado.fEmpleadosDepartamento(bbdd, 10));
+    }
+    
+    public static void probarCalcularSalario(){
+        System.out.println("Salario final tras aplicar irpf: " + Empleado.fNomina(bbdd, 1000, 500, 20));
+    }
+    
+    
 }

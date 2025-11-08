@@ -132,7 +132,7 @@ public class Empleado {
     
     
     public static Optional<ResultSet> selectAll(OperacionesBBDD bbdd){
-        Optional<ResultSet> rs = null;
+        Optional<ResultSet> rs = Optional.empty();
         
         try {
             rs = bbdd.select(CONSULTA_SELECT_ALL);
@@ -167,18 +167,51 @@ public class Empleado {
         
     }
     
-    public static void MostrarResultado(Optional<ResultSet> rs){
+    public static void motrarResultado(Optional<ResultSet> rsOptional){
         
+        if(!rsOptional.isPresent()){
+            System.out.println("No se obtuvieron resultados o hubo un error en la BBDD");
+            return;
+        }
+        
+        // Desempaquetar solo la UNA vez
+        ResultSet rs = rsOptional.get();
         try {
-            if(rs.isPresent()){
-                while (rs.get().next()){
-                    System.out.println("Numero empleado: " + rs.get().getInt("emp_no") +
-                        ". Apellido: " + rs.get().getString("apellido") + ". Oficio: " + rs.get().getString("oficio") + ". Dir: " 
-                            + rs.get().getInt("dir") + ". Fecha_alt: " + rs.get().getString("fecha_alta") + 
-                            ". Salario: " + rs.get().getDouble("salario") + ". Comision: " + rs.get().getDouble("comision") + 
-                            ". Numero de departamento: " + rs.get().getInt("dept_no"));
+            while (rs.next()){
+                    System.out.println("Numero empleado: " + rs.getInt("emp_no") +
+                        ". Apellido: " + rs.getString("apellido") + 
+                        ". Oficio: " + rs.getString("oficio") + 
+                        ". Dir: " + rs.getInt("dir") + 
+                        ". Fecha_alt: " + rs.getString("fecha_alt") + 
+                        ". Salario: " + rs.getDouble("salario") + 
+                        ". Comision: " + rs.getDouble("comision") + 
+                        ". Numero de departamento: " + rs.getInt("dept_no"));
                 }
-            }
+            
+        } catch (SQLException ex) {
+            System.getLogger(Departamento.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }
+    
+    
+    public static void motrarApellidoDirComisionSalario(OperacionesBBDD bbdd, Optional<ResultSet> rsOptional){
+        
+        if(!rsOptional.isPresent()){
+            System.out.println("No se obtuvieron resultados o hubo un error en la BBDD");
+            return;
+        }
+        
+        // Desempaquetar solo la UNA vez
+        ResultSet rs = rsOptional.get();
+        try {
+            while (rs.next()){
+                    System.out.println(
+                        "Apellido: " + rs.getString("apellido") + 
+                        ". Salario: " + rs.getDouble("salario") + 
+                        ". Comision: " + rs.getDouble("comision")+ 
+                        ". Nomina tras aplicar irpf 20%: " + fNomina(bbdd, rs.getDouble("salario"), rs.getDouble("comision"), 20));
+                }
+            
         } catch (SQLException ex) {
             System.getLogger(Departamento.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
@@ -248,6 +281,59 @@ public class Empleado {
         }
         
     }
+    
+    
+    public static int fEmpleadosDepartamento(OperacionesBBDD bbdd, int dept_no){
+        CallableStatement llamada;
+        int numEmpleados = 0;
+        String sql = "{? = call f_n_empleado (?)}";
+        
+        try {
+            llamada = bbdd.getConexion().prepareCall(sql);
+            
+            llamada.registerOutParameter(1, Types.INTEGER); // el primer parametro es de salida
+            
+            llamada.setInt(2, dept_no); // en ese segundo paramatro va el dept_no, parametro entrada
+                       
+            llamada.executeUpdate();  // Lo ejecuto
+            
+            numEmpleados = llamada.getInt(1); // recupero el nombre de la salida con getString()
+            
+        } catch (SQLException ex) {
+            System.getLogger(Departamento.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+        
+        return numEmpleados;
+    }
+    
+    
+    public static double fNomina(OperacionesBBDD bbdd, double salario, double comision, int irpf){
+        CallableStatement llamada;
+        double salarioFinal = 0;
+        String sql = "{? = call f_nomina (?,?,?)}";
+        
+        try {
+            llamada = bbdd.getConexion().prepareCall(sql);
+            
+            llamada.registerOutParameter(1, Types.DOUBLE); // el primer parametro es de salida
+            
+            llamada.setDouble(2, salario); 
+                       
+            llamada.setDouble(3, comision);
+            
+            llamada.setInt(4, irpf);
+            
+            llamada.executeUpdate();  // Lo ejecuto
+            
+            salarioFinal = llamada.getDouble(1); // recupero el nombre de la salida con get[tipo_dato]()
+            
+        } catch (SQLException ex) {
+            System.getLogger(Departamento.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+        
+        return salarioFinal;
+    }
+    
     
     
 }
