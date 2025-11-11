@@ -91,19 +91,6 @@ public class OperacionesBBDD {
     }
     
     
-    private Date convertirFecha(String fecha) {
-        java.util.Date fechaUtil = null;
-        try{
-            SimpleDateFormat s = new SimpleDateFormat("DD/MM/YYYY");
-            fechaUtil = s.parse(fecha);
-        } catch(ParseException ex){
-            System.getLogger(Empleado.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-
-        }
-        return new java.sql.Date(fechaUtil.getTime());
-    }
-    
-    
     
     private ResultSet executeQuery(String querySQL, Object ... params) throws SQLException{
         
@@ -148,20 +135,14 @@ public class OperacionesBBDD {
     
     
     
-    public int updateDeleteQuery(String genericSQL, Object... params){
-        try {
+    public int updateDeleteQuery(String genericSQL, Object... params) throws SQLException{
             preparedStatement = conexion.prepareStatement(genericSQL);
             
             for(int i = 0; i < params.length; i ++){
                 preparedStatement.setObject(i+1, params[i]);
             } 
             return preparedStatement.executeUpdate();
-            
-        } catch (SQLException ex) {
-            System.getLogger(OperacionesBBDD.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
         
-        return 0;
     }
     
     

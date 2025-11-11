@@ -1,0 +1,3 @@
+ORA-02291: Intentas insertar o actualizar un registro hijo que apunta a un padre que no existe.
+
+ORA-02292: Intentas borrar o actualizar un registro padre que ya tiene hijos asociados.

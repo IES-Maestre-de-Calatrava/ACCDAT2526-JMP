@@ -144,6 +144,7 @@ public class Departamento {
         return rowid;
     }
     
+    /*
     public int update(OperacionesBBDD bbdd){
         int i;
         
@@ -159,7 +160,7 @@ public class Departamento {
         
         return i;
     }
-
+    */
     public static String pNombreDepart(OperacionesBBDD bbdd, int dept_no){
         CallableStatement llamada;
         String dnombre = null;

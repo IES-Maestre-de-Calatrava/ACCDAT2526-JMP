@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Optional;
 
 /**
@@ -32,6 +33,7 @@ public class Empleado {
     
     private final static String CONSULTA_SELECT_ALL = "SELECT e.* FROM Empleados e";
     private final static String CONSULTA_SELECT_BY_ID = "SELECT e.* FROM Empleados e WHERE e.emp_no = ?";
+    private final static String CONSULTA_SELECT_BY_DEPARTAMENTO = "SELECT e.* FROM Empleados e WHERE e.dept_no = ?";
     private final static String INSERT = "insert into Empleados values (?,?,?,?,?,?,?,?)";
     private final static String INSERTAUTO = "insert into Empleados (emp_no, apellido, oficio) values (?,?,?)";
     private final static String UPDATE = "update Empleados set apellido=?, oficio=? where dept_no=?";
@@ -58,7 +60,7 @@ public class Empleado {
         this.comision = comision;
         this.dept_no = dept_no;
         
-        //this.fecha_alt = convertirFecha(fecha_alt);
+        this.fecha_alt = convertirFecha(fecha_alt);
     }
     
     public int getEmp_no() {
@@ -130,6 +132,19 @@ public class Empleado {
         return "Empleado{" + "emp_no=" + emp_no + ", apellido=" + apellido + ", oficio=" + oficio + ", dir=" + dir + ", fecha_alt=" + fecha_alt + ", salario=" + salario + ", comision=" + comision + ", dept_no=" + dept_no + '}';
     }    
     
+    private Date convertirFecha(String fecha) {
+        java.util.Date fechaUtil = null;
+        try{
+            SimpleDateFormat s = new SimpleDateFormat("DD/MM/YYYY");
+            fechaUtil = s.parse(fecha);
+        } catch(ParseException ex){
+            System.getLogger(Empleado.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+
+        }
+        return new java.sql.Date(fechaUtil.getTime());
+    }
+    
+    
     
     public static Optional<ResultSet> selectAll(OperacionesBBDD bbdd){
         Optional<ResultSet> rs = Optional.empty();
@@ -143,10 +158,13 @@ public class Empleado {
         return rs;
     }
     
-    public void SelectById(OperacionesBBDD bbdd, int dept_no){
+    public void SelectById(OperacionesBBDD bbdd, int emp_no){
         Optional<ResultSet> rs = null;
         
         try {
+            double salario = 0.0;
+            int contadorEmpleados =0;
+            
             rs = bbdd.select(CONSULTA_SELECT_BY_ID, emp_no); 
             if(rs.isPresent()){
                 while (rs.get().next()) {
@@ -159,6 +177,38 @@ public class Empleado {
                     this.setComision(rs.get().getDouble("comision"));
                     this.setDept_no(rs.get().getInt("salario"));
 
+                }
+            }
+        } catch (SQLException ex) {
+            System.getLogger(Departamento.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+        
+    }
+    
+    
+    
+    public void SelectByDepartamento(OperacionesBBDD bbdd, int dept_no){
+        Optional<ResultSet> rs = null;
+        
+        try {
+            double salario = 0.0;
+            int contadorEmpleados =0;
+            
+            rs = bbdd.select(CONSULTA_SELECT_BY_DEPARTAMENTO, dept_no); 
+            if(rs.isPresent()){
+                while (rs.get().next()) {
+                    String apellido = rs.get().getString("apellido");
+                    String oficio = rs.get().getString("oficio");
+                    double salarioEmp = rs.get().getDouble("salario");
+                    
+                    contadorEmpleados++;
+                    salario += salarioEmp;
+                }
+                
+                if(contadorEmpleados > 0){
+                    System.out.println("Salario medio: "+(salario/contadorEmpleados)+", Numero total de empleados: "+contadorEmpleados);
+                }else{
+                    System.out.println("El departamento con ID: "+dept_no+" no existe");
                 }
             }
         } catch (SQLException ex) {
@@ -217,11 +267,37 @@ public class Empleado {
         }
     }
     
-    public void insertar(OperacionesBBDD bbdd){
+    
+    
+    public String insertar(OperacionesBBDD bbdd){
+        StringBuilder errores = new StringBuilder();
+        
+        if (this.salario < 0) {
+            errores.append("ERROR: El salario debe ser una cantidad positiva (mayor que cero)\n");
+        }
+        
+        if(this.apellido == null && this.oficio == null){
+            errores.append("ERROR: El apellido y oficio no pueden ser nulos\n");
+        }
+        
+        LocalDate fechaAltaLocalDate = this.fecha_alt.toLocalDate();
+        
+        LocalDate hoy = LocalDate.now();
+        
+        if(!fechaAltaLocalDate.isEqual(hoy)){
+            errores.append("ERROR: la fecha de alta debe ser la fecha de hoy\n");
+        }
+        
+        if (errores.length() > 0) {
+        return "Errores:\n" + errores.toString();
+    }
+        
         try {
-            bbdd.insert(INSERT, this.emp_no, this.apellido, this.oficio, this.dir, this.fecha_alt, this.salario, this.comision, this.dept_no);
+            bbdd.insert(INSERT, this.emp_no, this.apellido, this.oficio, this.dir, this.fecha_alt, this.salario, this.comision, this.dept_no);            
+            return "Insercion completa correctamente: Numero Empleado: "+this.emp_no+", Apellido: "+this.apellido+", Oficio: "+this.oficio+", Dir: "+this.dir+", Fecha actual: "+this.fecha_alt+", Salario: "+this.salario+", Comision: "+this.comision+", Numero de departamento: "+dept_no;
+        
         } catch (SQLException ex) {
-            System.getLogger(Departamento.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            return comprobarExcepcion(ex);
         }
     }
     
@@ -245,20 +321,41 @@ public class Empleado {
         return rowid;
     }
     
-    public int update(OperacionesBBDD bbdd){
+    public String update(OperacionesBBDD bbdd){
         int i;
-        
-        i = bbdd.updateDeleteQuery(UPDATE, this.apellido, this.oficio, this.dept_no);
-        
-        return i;
+        String mensaje="";
+        try{
+            i = bbdd.updateDeleteQuery(UPDATE, this.apellido, this.oficio, this.dir, this.fecha_alt, this.salario, this.comision, this.dept_no, this.emp_no);
+                       
+        }catch (SQLException ex) {
+            return comprobarExcepcion(ex);
+        }
+       
+        if (i == 0){
+           mensaje =  "No existe el empleado";
+        }
+        else{
+            mensaje = "Empleado modificado correctamente";
+        }      
+        return mensaje;
     }
     
-    public int delete(OperacionesBBDD bbdd){
-        int i;
+    public String delete(OperacionesBBDD bbdd){
+        int i = 0;
+        String mensaje = "";
+        try{
+            i = bbdd.updateDeleteQuery(DELETE, this.dept_no);
+        }catch(SQLException ex){
+            return comprobarExcepcion(ex);
+        }
         
-        i = bbdd.updateDeleteQuery(DELETE, this.dept_no);
-        
-        return i;
+        if (i == 0){
+           mensaje =  "No existe el empleado";
+        }
+        else{
+            mensaje = "Empleado modificado correctamente";
+        }      
+        return mensaje;
     }
     
     
@@ -334,6 +431,24 @@ public class Empleado {
         return salarioFinal;
     }
     
+    public String comprobarExcepcion(SQLException ex){
+        String mensaje = "";
+
+            if(ex.getErrorCode() == 2291){
+                
+                if(ex.getMessage().contains("FK_DEP")){
+                    mensaje ="El departamento no existe";
+                } else if (ex.getMessage().contains("FK_DIR_EMPLEADOS")){
+                    mensaje = "El director no existe";
+                }
+            }else if(ex.getErrorCode() == 2292){
+                mensaje= "Error: Violación de integridad referencial (Clave Foránea)";
+            
+            }else if(ex.getErrorCode() == 1){
+                mensaje = "ERROR: El número de empleado ya existe en la base de datos (Clave duplicada)";
+            }
+            return mensaje;
+    }
     
     
 }

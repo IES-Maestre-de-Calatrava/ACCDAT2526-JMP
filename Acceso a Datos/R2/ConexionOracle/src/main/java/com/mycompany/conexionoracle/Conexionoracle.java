@@ -112,10 +112,21 @@ public class Conexionoracle {
         
         //probarCalcularSalario();
         
+        // PRUEBA DE LAS EXCEPCIONES
+        Empleado em = new Empleado();
+        //System.out.println(em.insertar(bbdd));
         
+        //em.update(bbdd);
+        //em.delete(bbdd);
+        
+        em.SelectByDepartamento(bbdd, 10);
+        
+        
+        /*
         Empleado emple = new Empleado();
         Optional<ResultSet> rsOpt = emple.selectAll(bbdd);
-        Empleado.motrarApellidoDirComisionSalario(bbdd, rsOpt);        
+        Empleado.motrarApellidoDirComisionSalario(bbdd, rsOpt);
+        */
         
     }
     
