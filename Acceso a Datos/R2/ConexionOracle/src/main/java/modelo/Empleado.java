@@ -5,6 +5,7 @@
 
 package modelo;
 
+import com.mycompany.conexionoracle.Conexionoracle;
 import java.sql.CallableStatement;
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -13,6 +14,8 @@ import java.sql.Types;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 /**
@@ -133,15 +136,20 @@ public class Empleado {
     }    
     
     private Date convertirFecha(String fecha) {
-        java.util.Date fechaUtil = null;
-        try{
-            SimpleDateFormat s = new SimpleDateFormat("DD/MM/YYYY");
-            fechaUtil = s.parse(fecha);
-        } catch(ParseException ex){
-            System.getLogger(Empleado.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-
+           try {
+        // 1. Definir el formateador para "DD/MM/YYYY"
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        
+        // 2. Parsear el String a un objeto de solo fecha (LocalDate)
+        LocalDate localDate = LocalDate.parse(fecha, formatter);
+        
+        // 3. Convertir el LocalDate a java.sql.Date.
+        // ESTO ES CLAVE: Date.valueOf(LocalDate) crea un sql.Date sin problemas de hora/zona horaria.
+        return java.sql.Date.valueOf(localDate); 
+        
+        } catch (java.time.format.DateTimeParseException e) {
+            throw new IllegalArgumentException("Error de formato de fecha: " + fecha, e);
         }
-        return new java.sql.Date(fechaUtil.getTime());
     }
     
     
@@ -201,12 +209,15 @@ public class Empleado {
                     String oficio = rs.get().getString("oficio");
                     double salarioEmp = rs.get().getDouble("salario");
                     
-                    contadorEmpleados++;
                     salario += salarioEmp;
                 }
                 
-                if(contadorEmpleados > 0){
-                    System.out.println("Salario medio: "+(salario/contadorEmpleados)+", Numero total de empleados: "+contadorEmpleados);
+                int empleados = OperacionesBBDD.numeroFilasResultSet(rs.get());
+                System.out.println("Total empleados: "+empleados);
+
+                
+                if(empleados > 0){
+                    System.out.println("Salario medio: "+(salario/empleados)+", Numero total de empleados: "+empleados);
                 }else{
                     System.out.println("El departamento con ID: "+dept_no+" no existe");
                 }
@@ -276,11 +287,15 @@ public class Empleado {
             errores.append("ERROR: El salario debe ser una cantidad positiva (mayor que cero)\n");
         }
         
-        if(this.apellido == null && this.oficio == null){
-            errores.append("ERROR: El apellido y oficio no pueden ser nulos\n");
+        if(this.apellido == null || this.oficio == null){
+            errores.append("ERROR: El apellido u oficio no pueden ser nulos\n");
         }
         
-        LocalDate fechaAltaLocalDate = this.fecha_alt.toLocalDate();
+        java.util.Date utilDate = new java.util.Date(this.fecha_alt.getTime());                
+
+        LocalDate fechaAltaLocalDate = utilDate.toInstant() 
+                                       .atZone(ZoneId.systemDefault()) // Esto usa tu zona horaria (CET)
+                                       .toLocalDate();
         
         LocalDate hoy = LocalDate.now();
         
@@ -449,6 +464,70 @@ public class Empleado {
             }
             return mensaje;
     }
+    
+    public void subirSalarioPorDepartamento(OperacionesBBDD bbdd, double salario, int dept_no) throws SQLException{
+        try{
+            Empleado em  = new Empleado();
+            Optional<ResultSet> rs = em.selectAll(bbdd);
+
+            System.out.println("======================MOSTRAR ANTES DEL UPDATE================================");
+            em.motrarResultado(rs);
+                        
+            rs.get().beforeFirst();
+            while(rs.get().next()){
+                if(rs.get().getInt(8) == dept_no){
+                    
+                    double salarioActual = rs.get().getDouble("salario");
+                
+                    double nuevoSalario = salarioActual + salario;
+                    
+                    rs.get().updateDouble("salario", nuevoSalario);
+                    rs.get().updateRow();
+                }
+            }
+        
+            System.out.println("\n=========================MOSTRAR DESPUES DEL UPDATE==================================");
+            rs.get().beforeFirst();
+            em.motrarResultado(rs);
+        
+        } catch (SQLException ex) {
+            System.getLogger(Conexionoracle.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            throw ex;
+        }
+    }
+    
+    
+    public void subirPorcentajeDeSalarioPorDepartamento(OperacionesBBDD bbdd, int porcentaje, int dept_no) throws SQLException{
+        try{
+            Empleado em  = new Empleado();
+            Optional<ResultSet> rs = em.selectAll(bbdd);
+
+            System.out.println("======================MOSTRAR ANTES DEL UPDATE================================");
+            em.motrarResultado(rs);
+                        
+            rs.get().beforeFirst();
+            while(rs.get().next()){
+                if(rs.get().getInt(8) == dept_no){
+                    
+                    double salarioActual = rs.get().getDouble("salario");
+                
+                    double nuevoSalario = salarioActual + (salarioActual*(porcentaje/100.00)); // divide entre double que si no da 0
+                    
+                    rs.get().updateDouble("salario", nuevoSalario);
+                    rs.get().updateRow();
+                }
+            }
+        
+            System.out.println("\n=========================MOSTRAR DESPUES DEL UPDATE==================================");
+            rs.get().beforeFirst();
+            em.motrarResultado(rs);
+        
+        } catch (SQLException ex) {
+            System.getLogger(Conexionoracle.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            throw ex;
+        }
+    }
+    
     
     
 }

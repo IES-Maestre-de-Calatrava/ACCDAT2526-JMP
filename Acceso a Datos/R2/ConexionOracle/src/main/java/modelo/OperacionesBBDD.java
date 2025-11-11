@@ -96,7 +96,9 @@ public class OperacionesBBDD {
         
         // el preparedStatement es como que te prepara la consulta en MEMORIA (solo se meteria una vez)
         // para que le pases solo los parametros, y tenerla de base
-        preparedStatement = conexion.prepareStatement(querySQL);
+        preparedStatement = conexion.prepareStatement(querySQL, 
+                                                            ResultSet.TYPE_SCROLL_SENSITIVE,
+                                                            ResultSet.CONCUR_UPDATABLE);
        
         for(int i=0; i < params.length; i++){
             preparedStatement.setObject(i+1, params[i]);
@@ -143,6 +145,23 @@ public class OperacionesBBDD {
             } 
             return preparedStatement.executeUpdate();
         
+    }
+    
+    
+    public static int numeroFilasResultSet(ResultSet rs) throws SQLException{
+        int rows = 0;
+        
+        try {
+            if (rs.last()) {
+                rows = rs.getRow();
+                rs.beforeFirst();
+            }
+        } catch (SQLException ex) {
+            System.getLogger(OperacionesBBDD.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            throw ex;
+        }
+        
+        return rows;
     }
     
     

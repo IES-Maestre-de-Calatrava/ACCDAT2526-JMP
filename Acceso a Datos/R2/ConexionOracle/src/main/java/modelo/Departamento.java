@@ -22,7 +22,7 @@ public class Departamento {
     private String loc;
     
     
-    private final static String SELECTALL = "SELECT d.* FROM departamentos d";
+    private final static String SELECTALL = "SELECT d.* FROM departamentos d ORDER BY dnombre";
     private final static String SELECTID = "SELECT d.* FROM departamentos d WHERE d.dept_no = ?";
     private final static String INSERT = "insert into Departamentos values (?,?,?)";
     private final static String INSERTAUTO = "insert into Departamentos (dnombre, loc) values (?,?)";
