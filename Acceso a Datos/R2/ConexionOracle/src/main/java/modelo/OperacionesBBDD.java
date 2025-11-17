@@ -37,8 +37,8 @@ public class OperacionesBBDD {
         if (this.conexion == null) {
             try {
                 this.propiedades = new Properties();
-                this.propiedades.setProperty("user", "dam2"); //aqui pongo el nombre de usuario de mi conexion
-                this.propiedades.setProperty("password", "dam2"); //aqui pongo la constraseña de mi conexion
+                this.propiedades.setProperty("user", "EXAMEN_VACIO"); //aqui pongo el nombre de usuario de mi conexion
+                this.propiedades.setProperty("password", "examen_pass"); //aqui pongo la constraseña de mi conexion
                 
                 Class.forName(driver);
                 
