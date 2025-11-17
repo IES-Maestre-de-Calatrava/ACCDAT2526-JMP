@@ -36,7 +36,14 @@ public class Empleado {
     
     private final static String CONSULTA_SELECT_ALL = "SELECT e.* FROM Empleados e";
     private final static String CONSULTA_SELECT_BY_ID = "SELECT e.* FROM Empleados e WHERE e.emp_no = ?";
-    private final static String CONSULTA_SELECT_BY_DEPARTAMENTO = "SELECT e.* FROM Empleados e WHERE e.dept_no = ?";
+    
+    private final static String CONSULTA_SELECT_BY_DEPARTAMENTO = "SELECT e.*, d.dnombre "
+                                                                + "FROM Empleados e "
+                                                                + "JOIN Departamentos d ON e.dept_no = d.dept_no "
+                                                                + "WHERE e.dept_no = ?";
+    
+    private final static String CONSULTA_SELECT_ORDER_BY_DEPT = "SELECT e.* FROM Empleados e ORDER BY e.dept_no";
+    
     private final static String INSERT = "insert into Empleados values (?,?,?,?,?,?,?,?)";
     private final static String INSERTAUTO = "insert into Empleados (emp_no, apellido, oficio) values (?,?,?)";
     private final static String UPDATE = "update Empleados set apellido=?, oficio=? where dept_no=?";
@@ -135,8 +142,9 @@ public class Empleado {
         return "Empleado{" + "emp_no=" + emp_no + ", apellido=" + apellido + ", oficio=" + oficio + ", dir=" + dir + ", fecha_alt=" + fecha_alt + ", salario=" + salario + ", comision=" + comision + ", dept_no=" + dept_no + '}';
     }    
     
+    // FUNCIONA
     private Date convertirFecha(String fecha) {
-           try {
+        try {
         // 1. Definir el formateador para "DD/MM/YYYY"
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         
@@ -200,7 +208,6 @@ public class Empleado {
         
         try {
             double salario = 0.0;
-            int contadorEmpleados =0;
             
             rs = bbdd.select(CONSULTA_SELECT_BY_DEPARTAMENTO, dept_no); 
             if(rs.isPresent()){
@@ -208,6 +215,8 @@ public class Empleado {
                     String apellido = rs.get().getString("apellido");
                     String oficio = rs.get().getString("oficio");
                     double salarioEmp = rs.get().getDouble("salario");
+                    String ndepartamento = rs.get().getString("dnombre");
+                    System.out.println("Apellido: "+ apellido+", Oficio: "+oficio+", Salario: "+salarioEmp+", ndepart: "+ndepartamento);
                     
                     salario += salarioEmp;
                 }
@@ -228,7 +237,73 @@ public class Empleado {
         
     }
     
-    public static void motrarResultado(Optional<ResultSet> rsOptional){
+    public void SelectEmpleadosYSalarioByDepartamento(OperacionesBBDD bbdd){
+        Optional<ResultSet> rs = null;
+        
+        int ndepartAnterior = -1;
+        int ndepart = 0;
+        
+        double salarioDept = 0.0;
+        int empleadosDept = 0;
+        
+        double totalSalarioGeneral = 0.0;
+        int totalEmpleadosGeneral = 0;
+        
+        try {
+            rs = bbdd.select(CONSULTA_SELECT_ORDER_BY_DEPT); 
+            
+            if(rs.isPresent()){
+                
+                while (rs.get().next()) {
+                    
+                    String apellido = rs.get().getString("apellido");
+                    String oficio = rs.get().getString("oficio");
+                    double salarioEmp = rs.get().getDouble("salario");
+                    ndepart = rs.get().getInt("dept_no");
+                    
+                     
+                    if(ndepart != ndepartAnterior){
+                        if(empleadosDept > 0){
+                            System.out.println("Salario medio: "+(salarioDept/empleadosDept)+", Numero total de empleados: "+empleadosDept);
+                            System.out.println();
+                        }else{
+                            System.out.println("El departamento con ID: "+dept_no+" no existe");
+                        }
+                        
+                        totalEmpleadosGeneral += empleadosDept;
+                        totalSalarioGeneral += salarioDept;
+                        
+                        salarioDept = 0;
+                        empleadosDept = 0;
+                    }
+                    
+                    
+                    System.out.println("Apellido: "+ apellido+", Oficio: "+oficio+", Salario: "+salarioEmp+", Departamento: "+ndepart);
+                    
+                    salarioDept += salarioEmp;
+                    empleadosDept++;
+                    
+                    ndepartAnterior = ndepart;
+
+                } 
+                
+                // el ultimo departamento hay que hacerlo fuera del bucle pq la condicion de que sea distinto a otro no existe porque es el ULTIMO
+                System.out.println("Salario medio: "+(salarioDept/empleadosDept)+", Numero total de empleados: "+empleadosDept);
+                System.out.println();
+                
+                
+                totalEmpleadosGeneral += empleadosDept;
+                totalSalarioGeneral += salarioDept;
+                System.out.println("Total empleados: "+ totalEmpleadosGeneral+" Total Salario Medio: "+ (totalSalarioGeneral/totalEmpleadosGeneral));
+                
+            }
+        } catch (SQLException ex) {
+            System.getLogger(Departamento.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+        
+    }
+    
+    public static void mostrarResultado(Optional<ResultSet> rsOptional){
         
         if(!rsOptional.isPresent()){
             System.out.println("No se obtuvieron resultados o hubo un error en la BBDD");
@@ -277,8 +352,6 @@ public class Empleado {
             System.getLogger(Departamento.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }
-    
-    
     
     public String insertar(OperacionesBBDD bbdd){
         StringBuilder errores = new StringBuilder();
@@ -471,7 +544,7 @@ public class Empleado {
             Optional<ResultSet> rs = em.selectAll(bbdd);
 
             System.out.println("======================MOSTRAR ANTES DEL UPDATE================================");
-            em.motrarResultado(rs);
+            em.mostrarResultado(rs);
                         
             rs.get().beforeFirst();
             while(rs.get().next()){
@@ -488,7 +561,7 @@ public class Empleado {
         
             System.out.println("\n=========================MOSTRAR DESPUES DEL UPDATE==================================");
             rs.get().beforeFirst();
-            em.motrarResultado(rs);
+            em.mostrarResultado(rs);
         
         } catch (SQLException ex) {
             System.getLogger(Conexionoracle.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
@@ -503,7 +576,7 @@ public class Empleado {
             Optional<ResultSet> rs = em.selectAll(bbdd);
 
             System.out.println("======================MOSTRAR ANTES DEL UPDATE================================");
-            em.motrarResultado(rs);
+            em.mostrarResultado(rs);
                         
             rs.get().beforeFirst();
             while(rs.get().next()){
@@ -520,7 +593,7 @@ public class Empleado {
         
             System.out.println("\n=========================MOSTRAR DESPUES DEL UPDATE==================================");
             rs.get().beforeFirst();
-            em.motrarResultado(rs);
+            em.mostrarResultado(rs);
         
         } catch (SQLException ex) {
             System.getLogger(Conexionoracle.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
@@ -528,6 +601,219 @@ public class Empleado {
         }
     }
     
+    public static void insertSobreResultSet(OperacionesBBDD bbdd, Empleado empleado) throws SQLException, InterruptedException{
+        try{
+            
+            Optional<ResultSet> rs = empleado.selectAll(bbdd);
+            
+            System.out.println("======================MOSTRAR ANTES DEL INSERT================================");
+            //departamento.mostrarResultado(rs);
+            empleado.mostrarResultado(rs);
     
+            // cojo la fecha de hoy
+            LocalDate fechaLocalDate = LocalDate.now();
+        
+            // convertir LocalDate a java.sql.Date
+            Date fechaSql = Date.valueOf(fechaLocalDate);
+            
+            int numFila = rs.get().getRow();
+            rs.get().moveToInsertRow();
+            numFila = rs.get().getRow();
+            
+            rs.get().updateInt(1, 9999);
+            rs.get().updateString(2, "MOLINA");
+            rs.get().updateString(3, "EMPLEADO");
+            rs.get().updateInt(4, 7566);
+            rs.get().updateDate(5, fechaSql);
+            rs.get().updateDouble(6, 1800.56);
+            rs.get().updateDouble(7, 2.00);
+            rs.get().updateInt(8, 15);
+            
+            rs.get().insertRow();
+            rs.get().moveToCurrentRow();
+            numFila = rs.get().getRow();
+
+            System.out.println("\n=========================MOSTRAR DESPUES DEL INSERT==================================");
+            rs.get().beforeFirst();
+            empleado.mostrarResultado(rs);
+            System.out.println("NumFilas: "+numFila);
+        
+        } catch (SQLException ex) {
+            System.getLogger(Conexionoracle.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            throw ex;
+        }
+    }
     
+    public static void insertSobreResultSet2(OperacionesBBDD bbdd, Empleado empleado) throws SQLException, InterruptedException{
+        try{
+            
+            Optional<ResultSet> rs = empleado.selectAll(bbdd);
+
+            System.out.println("======================MOSTRAR ANTES DEL INSERT================================");
+            empleado.mostrarResultado(rs);
+                              
+            int numFila = rs.get().getRow();
+            rs.get().moveToInsertRow();
+            numFila = rs.get().getRow();
+            
+            rs.get().updateInt(1, empleado.getEmp_no());
+            rs.get().updateString(2, empleado.getApellido());
+            rs.get().updateString(3, empleado.getOficio());
+            rs.get().updateInt(4, empleado.getDir());
+            rs.get().updateDate(5, empleado.getFecha_alt());
+            rs.get().updateDouble(6, empleado.getSalario());
+            rs.get().updateDouble(7, empleado.getComision());
+            rs.get().updateInt(8, empleado.getDept_no());
+            
+            rs.get().insertRow();
+            rs.get().moveToCurrentRow();
+            numFila = rs.get().getRow();
+
+            System.out.println("\n=========================MOSTRAR DESPUES DEL INSERT==================================");
+            rs.get().beforeFirst();
+            empleado.mostrarResultado(rs);
+            System.out.println("NumFilas: "+numFila);
+        
+        } catch (SQLException ex) {
+            System.getLogger(Conexionoracle.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            throw ex;
+        }
+    }
+    
+    public static void deleteSobreResultSetPorCampo(OperacionesBBDD bbdd, int dept_no)throws SQLException, InterruptedException{
+        try{
+            int deptNoAEliminar = dept_no;
+            Empleado empleado  = new Empleado();
+            Optional<ResultSet> rs = empleado.selectAll(bbdd);
+
+            System.out.println("======================MOSTRAR ANTES DEL DELETE================================");
+            empleado.mostrarResultado(rs);
+            
+            rs.get().beforeFirst();
+            boolean encontrado = false;
+        
+            while (rs.get().next() && encontrado == false) {
+                if (rs.get().getInt(8) == deptNoAEliminar) {
+                    rs.get().deleteRow(); 
+                    encontrado = true;
+                }
+            }
+
+            if (!encontrado) {
+                System.out.println("No se encontró el empleado");
+            }
+        
+            System.out.println("\n=========================MOSTRAR DESPUES DEL DELETE==================================");
+            rs.get().beforeFirst();
+            empleado.mostrarResultado(rs);
+            System.out.println("Empleados con DEPT_NO " + deptNoAEliminar + " eliminados correctamente");
+
+        
+        } catch (SQLException ex) {
+            System.getLogger(Conexionoracle.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            throw ex;
+        }
+    }
+    
+    public static void deleteSobreResultSetPorObjeto(OperacionesBBDD bbdd, Empleado empleado)throws SQLException, InterruptedException{
+        try{
+            int emp_no = empleado.getEmp_no();
+            String apellido = empleado.getApellido();
+            String oficio = empleado.getOficio();
+            int dir = empleado.getDir();
+            Date fecha = empleado.getFecha_alt();
+            Double salario = empleado.getSalario();
+            Double comision = empleado.getComision();
+            int dept_no = empleado.getDept_no();
+            
+            Optional<ResultSet> rs = empleado.selectAll(bbdd);
+
+            System.out.println("======================MOSTRAR ANTES DEL DELETE================================");
+            empleado.mostrarResultado(rs);
+            
+            rs.get().beforeFirst();
+            boolean encontrado = false;
+        
+            while (rs.get().next() && encontrado == false) {
+                if ((rs.get().getInt(1) == emp_no) && (rs.get().getString(2).equals(apellido)) && (rs.get().getString(3).equals(oficio)) 
+                     && (rs.get().getInt(4) == dir) && (rs.get().getDate(5).equals(fecha)) && (rs.get().getDouble(6) == salario) 
+                     && (rs.get().getDouble(7) == comision)&& (rs.get().getInt(8) == dept_no)) {
+                        rs.get().deleteRow(); 
+                        encontrado = true;   
+                }
+            }
+
+            if (!encontrado) {
+                System.out.println("No se encontró el empleado");
+            }
+        
+            System.out.println("\n=========================MOSTRAR DESPUES DEL DELETE==================================");
+            rs.get().beforeFirst();
+            empleado.mostrarResultado(rs);
+            System.out.println("Empleado eliminado correctamente");
+
+        
+        } catch (SQLException ex) {
+            System.getLogger(Conexionoracle.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            throw ex;
+        }
+    }
+
+    public static void updateSobreResultSetPorCampo(OperacionesBBDD bbdd, String oficio) throws SQLException, InterruptedException{
+        try{
+            Empleado em = new Empleado();
+            Optional<ResultSet> rs = em.selectAll(bbdd);
+
+            System.out.println("======================MOSTRAR ANTES DEL UPDATE================================");
+            em.mostrarResultado(rs);
+            
+            
+            rs.get().beforeFirst();
+            while(rs.get().next()){
+                rs.get().updateString("oficio", oficio);
+                rs.get().updateRow();
+            }
+        
+            System.out.println("\n=========================MOSTRAR DESPUES DEL UPDATE==================================");
+            rs.get().beforeFirst();
+            em.mostrarResultado(rs);
+        
+        } catch (SQLException ex) {
+            System.getLogger(Conexionoracle.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            throw ex;
+        }
+    }
+    
+    /*
+    public static void updateSobreResultSetPorObjeto(OperacionesBBDD bbdd, Empleado em) throws SQLException, InterruptedException{
+        try{
+            Optional<ResultSet> rs = em.selectAll(bbdd);
+
+            System.out.println("======================MOSTRAR ANTES DEL UPDATE================================");
+            em.mostrarResultado(rs);
+            
+            
+            rs.get().beforeFirst();
+            while(rs.get().next()){
+                rs.get().updateInt("emp_no", em.getEmp_no());
+                rs.get().updateString("apellido", em.getApellido());
+                rs.get().updateString("oficio", em.getOficio());
+                rs.get().updateInt("dir", em.getDir());
+                rs.get().updateDate("fecha_alt", em.getFecha_alt());
+                rs.get().updateDouble("salario", em.getSalario());
+                rs.get().updateDouble("comision", em.getComision());
+                rs.get().updateInt("dept_no", em.getDept_no());
+                rs.get().updateRow();
+            }
+        
+            System.out.println("\n=========================MOSTRAR DESPUES DEL UPDATE==================================");
+            rs.get().beforeFirst();
+            em.mostrarResultado(rs);
+        
+        } catch (SQLException ex) {
+            System.getLogger(Conexionoracle.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            throw ex;
+        }
+    }
+*/
 }

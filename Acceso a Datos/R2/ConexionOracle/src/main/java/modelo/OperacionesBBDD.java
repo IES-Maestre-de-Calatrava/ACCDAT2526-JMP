@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -36,8 +37,8 @@ public class OperacionesBBDD {
         if (this.conexion == null) {
             try {
                 this.propiedades = new Properties();
-                this.propiedades.setProperty("user", "dam2");
-                this.propiedades.setProperty("password", "dam2");
+                this.propiedades.setProperty("user", "dam2"); //aqui pongo el nombre de usuario de mi conexion
+                this.propiedades.setProperty("password", "dam2"); //aqui pongo la constraseña de mi conexion
                 
                 Class.forName(driver);
                 
@@ -147,7 +148,12 @@ public class OperacionesBBDD {
         
     }
     
-    
+    /**
+     * Este metodo devuelve el numero de filas, pero solo sirve para resultSets estáticos
+     * @param rs
+     * @return
+     * @throws SQLException 
+     */
     public static int numeroFilasResultSet(ResultSet rs) throws SQLException{
         int rows = 0;
         
@@ -162,6 +168,15 @@ public class OperacionesBBDD {
         }
         
         return rows;
+    }
+    
+    
+     public static boolean compararFechas(LocalDate fecha1, LocalDate fecha2){
+        if (fecha1.equals(fecha2)){
+            return true;
+        }else{
+            return false;
+        }
     }
     
     
