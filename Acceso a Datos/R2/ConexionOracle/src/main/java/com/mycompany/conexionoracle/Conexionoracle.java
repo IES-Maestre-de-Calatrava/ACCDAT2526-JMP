@@ -117,9 +117,8 @@ public class Conexionoracle {
         
         // PRUEBA DE LAS EXCEPCIONES
         Departamento dept = new Departamento(15, "INFORMATICA", "MADRID");
-        Empleado em = new Empleado();
+        dept.insertar(bbdd);
         
-        dept.deleteSobreResultSetPorObjeto(bbdd, dept);
        
         
         //System.out.println(em.insertar(bbdd));
