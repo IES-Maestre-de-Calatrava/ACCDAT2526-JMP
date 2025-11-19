@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
-package modelo;
+package com.examenr2_javier_molina.modelo;
 
 import java.sql.Connection;
 import java.sql.Date;

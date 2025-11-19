@@ -1,0 +1,6 @@
+com\examenr2_javier_molina\ExamenR2_Javier_Molina.class
+com\examenr2_javier_molina\modelo\OperacionesBBDD.class
+controlador\ControlConversor.class
+vista\InterfazVista.class
+com\examenr2_javier_molina\modelo\Viajes.class
+vista\VentanaConversorTexto.class

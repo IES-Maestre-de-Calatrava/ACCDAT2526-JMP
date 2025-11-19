@@ -10,6 +10,7 @@ import java.util.Optional;
 import modelo.Departamento;
 import modelo.Empleado;
 import modelo.OperacionesBBDD;
+import modelo.Viajes;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -28,6 +29,9 @@ public class Conexionoracle {
     */
     public static void main(String[] args) throws SQLException, InterruptedException {
         
+        
+        Viajes viaje = new Viajes("11223", "Valencia", "Islas Baleares", "11/01/2026", "20/01/2026", 1500.75);
+        viaje.insertar(bbdd, viaje);
         /*
         Departamento departamento = new Departamento();
         Optional<ResultSet> rsOpt = departamento.selectAll(bbdd);
@@ -116,8 +120,8 @@ public class Conexionoracle {
         //probarCalcularSalario();
         
         // PRUEBA DE LAS EXCEPCIONES
-        Departamento dept = new Departamento(15, "INFORMATICA", "MADRID");
-        dept.insertar(bbdd);
+        //Departamento dept = new Departamento(15, "INFORMATICA", "MADRID");
+        //dept.insertar(bbdd);
         
        
         
